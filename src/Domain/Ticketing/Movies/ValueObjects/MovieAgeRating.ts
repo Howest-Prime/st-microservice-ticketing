@@ -30,6 +30,10 @@ export class MovieAgeRating extends ValueObject {
         return this._value === other._value;
     }
 
+    public get Value(): number {
+        return this._value;
+    }
+
 
 
     

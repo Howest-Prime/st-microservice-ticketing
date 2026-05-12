@@ -10,61 +10,63 @@ import {
 } from '@/Domain/Ticketing/Movies/mod.ts';
 import { MovieAgeRatingValue } from '@/Domain/Ticketing/Movies/ValueObjects/MovieAgeRating.ts';
 import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
-import { type DocumentMapper } from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
-
-interface MovieDocumentShape {
-    _id?: string;
-    id?: string;
-    externalId: string;
-    title: string;
-    duration: number;
-    genres: string[];
-    ageRating: number;
-    posterUrl: string;
-    priceAmount: number;
-    priceCurrency: string;
-}
+import {
+    type DocumentMapper,
+    serializeObjectToDocument,
+} from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
 
 export class MovieDocumentMapper implements DocumentMapper<Movie> {
-    toDocument(aggregate: Movie): Document {
-        return {
-            _id: aggregate.id.value,
-            externalId: aggregate.externalId,
-            title: aggregate.title.value,
-            duration: aggregate.duration.value,
-            genres: aggregate.genres.map((g) => g.value),
-            ageRating: aggregate.ageRating['_value'] as number,
-            posterUrl: aggregate.posterUrl.value,
-            priceAmount: aggregate.price.amount,
-            priceCurrency: aggregate.price.currency,
-        };
+    toDocument(movie: Movie): Document {
+        return serializeObjectToDocument({
+            _id: movie.id.toString(),
+            externalId: movie.externalId,
+            title: movie.title.value,
+            duration: movie.duration.value,
+            genres: movie.genres.map((g) => g.value),
+            ageRating: movie.ageRating.Value,
+            posterUrl: movie.posterUrl.value,
+            priceAmount: movie.price.amount,
+            priceCurrency: movie.price.currency,
+        });
     }
 
     reconstitute(document: Document): Movie {
-        const snapshot = document as unknown as MovieDocumentShape;
+        return this.reconstituteFromDocument(
+            (document.id ?? document._id) as string,
+            document.externalId as string,
+            document.title as string,
+            document.duration as number,
+            document.genres as string[],
+            document.ageRating as MovieAgeRatingValue,
+            document.posterUrl as string,
+            document.priceAmount as number,
+            document.priceCurrency as string,
+        );
+    }
 
-        const movie = Object.create(Movie.prototype) as {
-            _id: MovieId;
-            _externalId: string;
-            _title: MovieTitle;
-            _duration: MovieDuration;
-            _genres: MovieGenre[];
-            _ageRating: MovieAgeRating;
-            _posterUrl: MoviePosterUrl;
-            _price: Money;
-            _domainEvents: unknown[];
-        };
+    private reconstituteFromDocument(
+        id: string,
+        externalId: string,
+        title: string,
+        duration: number,
+        genres: string[],
+        ageRating: MovieAgeRatingValue,
+        posterUrl: string,
+        priceAmount: number,
+        priceCurrency: string,
+    ): Movie {
+        const movie = Object.create(Movie.prototype);
 
-        movie._id = MovieId.create((snapshot._id ?? snapshot.id) as string);
-        movie._externalId = snapshot.externalId;
-        movie._title = MovieTitle.create(snapshot.title);
-        movie._duration = MovieDuration.create(snapshot.duration);
-        movie._genres = snapshot.genres.map((g) => MovieGenre.create(g));
-        movie._ageRating = MovieAgeRating.create(snapshot.ageRating as MovieAgeRatingValue);
-        movie._posterUrl = MoviePosterUrl.create(snapshot.posterUrl);
-        movie._price = Money.create(snapshot.priceAmount, snapshot.priceCurrency);
+        movie._id = MovieId.create(id);
+        movie._externalId = externalId;
+        movie._title = MovieTitle.create(title);
+        movie._duration = MovieDuration.create(duration);
+        movie._genres = genres.map((g) => MovieGenre.create(g));
+        movie._ageRating = MovieAgeRating.create(ageRating);
+        movie._posterUrl = MoviePosterUrl.create(posterUrl);
+        movie._price = Money.create(priceAmount, priceCurrency);
         movie._domainEvents = [];
 
-        return movie as unknown as Movie;
+        return movie;
     }
 }

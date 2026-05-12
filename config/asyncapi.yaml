@@ -38,6 +38,20 @@ channels:
                     type: topic
                     routingKey: thirdparty.service.suggestions.sendcreatesuggestion
 
+    howestprime.movies.movie.movieregistered:
+        address: howestprime.movies.movie.movieregistered
+        title: Movie registered
+        messages:
+            MovieRegistered:
+                $ref: '#/components/messages/MovieRegistered'
+        bindings:
+            amqp:
+                is: routingKey
+                exchange:
+                    name: howestprime
+                    type: topic
+                    routingKey: howestprime.movies.movie.movieregistered
+
     howestprime.ticketing.suggestions.created:
         address: howestprime.ticketing.suggestions.created
         title: Suggestion created
@@ -73,6 +87,16 @@ operations:
         messages:
             - $ref: '#/channels/howestprime.ticketing.suggestions.created/messages/SuggestionCreated'
 
+    WhenMovieRegisteredSaveMovie:
+        action: receive
+        channel:
+            $ref: '#/channels/howestprime.movies.movie.movieregistered'
+        description: |
+            Triggered when a movie is registered in the Movies bounded context.
+            Consumes the message and delegates to the SaveMovie command use case.
+        messages:
+            - $ref: '#/channels/howestprime.movies.movie.movieregistered/messages/MovieRegistered'
+
 components:
     messages:
         SuggestionSendCreateSuggestion:
@@ -88,6 +112,13 @@ components:
             summary: Event message emitted after a suggestion is created.
             payload:
                 $ref: '#/components/schemas/SuggestionCreatedPayload'
+
+        MovieRegistered:
+            name: MovieRegistered
+            title: Movie registered
+            summary: Event message emitted when a movie is registered.
+            payload:
+                $ref: '#/components/schemas/MovieRegisteredPayload'
 
     schemas:
         SuggestionSendCreateSuggestionPayload:
@@ -153,3 +184,44 @@ components:
                     format: date-time
                     description: UTC timestamp when the event occurred.
                     example: '2026-03-24T10:15:30.000Z'
+
+        MovieRegisteredPayload:
+            type: object
+            required:
+                - movieId
+                - title
+                - duration
+                - genres
+                - ageRating
+                - posterUrl
+            properties:
+                movieId:
+                    type: string
+                    format: uuid
+                    description: External identifier of the registered movie.
+                    example: 8fdd8b8e-8de4-4b9a-8e16-868b72f4f469
+                title:
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    description: Title of the movie.
+                    example: The Shawshank Redemption
+                duration:
+                    type: number
+                    description: Duration of the movie in minutes.
+                    example: 142
+                genres:
+                    type: array
+                    items:
+                        type: string
+                    description: List of genres.
+                    example: [Drama]
+                ageRating:
+                    type: number
+                    description: Minimum age rating for the movie.
+                    example: 16
+                posterUrl:
+                    type: string
+                    format: uri
+                    description: URL of the movie poster.
+                    example: https://example.com/posters/shawshank.jpg

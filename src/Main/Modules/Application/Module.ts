@@ -1,8 +1,6 @@
 import { ServiceCollection, ServiceProvider } from '@domaincrafters/di';
 
 import {
-    CreateSuggestionUseCase,
-    type CreateSuggestionUseCaseInput,
     GetSuggestionByIdQueryUseCase,
     type GetSuggestionByIdQueryUseCaseInput,
     ListSuggestionsQueryUseCase,
@@ -24,6 +22,7 @@ import { MongoDbUnitOfWork } from '@/Infrastructure/Persistence/MongoDb/Shared/m
 import { Config, ConsoleLogger } from '@/Infrastructure/Shared/mod.ts';
 import { Module } from '@/Main/Modules/Shared/mod.ts';
 import { OnlinePaymentService } from '@/Infrastructure/Payment/mod.ts';
+import { SaveMovieUseCase, SaveMovieUseCaseInput } from '@/Application/Ticketing/Movies/mod.ts';
 
 export class Application implements Module {
     add(serviceCollection: ServiceCollection, _config: Config): void {
@@ -39,7 +38,7 @@ export class Application implements Module {
 
     private addUseCases(serviceCollection: ServiceCollection): void {
         serviceCollection.addScoped(
-            CreateSuggestionUseCase.name,
+            SaveMovieUseCase.name,
             async (serviceProvider: ServiceProvider) => {
                 const unitOfWork = (await serviceProvider.getService<MongoDbUnitOfWork>(
                     MongoDbUnitOfWork.name,
@@ -48,8 +47,8 @@ export class Application implements Module {
                 const logger = (await serviceProvider.getService<Logger>(ConsoleLogger.name))
                     .getOrThrow();
 
-                const useCase: UseCase<CreateSuggestionUseCaseInput, string> =
-                    new CreateSuggestionUseCase(
+                const useCase: UseCase<SaveMovieUseCaseInput, string> =
+                    new SaveMovieUseCase(
                         unitOfWork,
                         logger,
                     );

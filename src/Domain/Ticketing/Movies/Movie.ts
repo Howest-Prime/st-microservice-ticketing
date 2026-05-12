@@ -4,8 +4,8 @@ import {
     MovieDuration,
     MovieGenre,
     MovieAgeRating,
-    MoviePosterUrl
- } from '@/Domain/Ticketing/Movies/Mod.ts';
+    MoviePosterUrl,
+ } from '@/Domain/Ticketing/Movies/mod.ts';
  import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
 
 
@@ -36,7 +36,7 @@ export class Movie extends AggregateRoot<MovieId>{
         genres: MovieGenre[],
         ageRating: MovieAgeRating,
         posterUrl: MoviePosterUrl,
-        price: Money
+    
     ){
         super(id);
         this._externalId = externalId;
@@ -45,7 +45,7 @@ export class Movie extends AggregateRoot<MovieId>{
         this._genres = genres;
         this._ageRating = ageRating;
         this._posterUrl = posterUrl;
-        this._price = price;
+        this._price = Money.create(0, "EUR");
     }
 
     public static create(
@@ -55,9 +55,8 @@ export class Movie extends AggregateRoot<MovieId>{
         genres: MovieGenre[],
         ageRating: MovieAgeRating,
         posterUrl: MoviePosterUrl,
-        price: Money
     ): Movie {
-        return new Movie(
+        const newMovie =  new Movie(
             MovieId.create(), 
             externalId, 
             title, 
@@ -65,7 +64,15 @@ export class Movie extends AggregateRoot<MovieId>{
             genres, 
             ageRating, 
             posterUrl, 
-            price);
+            );
+        newMovie.validate();
+        return newMovie;
+    }
+
+    protected validate(){
+        if(this.genres.length < 0){
+          //  throw new InvalidMovieGenre()
+        }
     }
 
     public get movieId(): MovieId {

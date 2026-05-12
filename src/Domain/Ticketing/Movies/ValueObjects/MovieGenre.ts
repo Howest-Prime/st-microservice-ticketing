@@ -1,6 +1,6 @@
 import { ValueObject } from '@/Domain/Shared/mod.ts';
 
-import { InvalidMovieGenre } from '@/Domain/Ticketing/Movies/Mod.ts';
+import { InvalidMovieGenre } from '@/Domain/Ticketing/Movies/mod.ts';
 
 
 export class MovieGenre extends ValueObject {

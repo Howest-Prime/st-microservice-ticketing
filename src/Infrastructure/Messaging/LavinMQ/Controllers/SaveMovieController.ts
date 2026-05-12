@@ -4,7 +4,7 @@ import type { UseCase } from '@/Application/Ports/mod.ts';
 import { IllegalArgumentException } from '@domaincrafters/std';
 
 export interface SaveMovieRequest {
-    externalId: unknown;
+    movieId: unknown;
     title: unknown;
     duration: unknown;
     genres: unknown;
@@ -39,8 +39,8 @@ export class SaveMovieController implements AmqpController<SaveMovieRequest> {
 
         return {
             movieExternalId: this.requireNonEmptyString(
-                payload.externalId,
-                'externalId',
+                payload.movieId,
+                'movieId',
             ),
             movieTitle: this.requireNonEmptyString(
                 payload.title,

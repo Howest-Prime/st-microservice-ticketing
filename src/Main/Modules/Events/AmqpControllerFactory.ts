@@ -36,6 +36,8 @@ export class AmqpControllerFactory implements ControllerFactory {
         switch (normalizedOperationId) {
             case 'whensuggestionsendcreatesuggestion':
                 return this.createCreateSuggestionController();
+            case 'whenmovieregisteredsavemovie':
+                return this.createSaveMovieController();
         }
 
         const normalizedEventName = eventName.toLowerCase();

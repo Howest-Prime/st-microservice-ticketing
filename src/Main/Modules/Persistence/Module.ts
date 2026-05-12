@@ -14,7 +14,9 @@ import {
     PublishDomainEventsMongoDbUnitOfWorkInterceptor,
 } from '@/Infrastructure/Persistence/MongoDb/mod.ts';
 import {
+MongoDbMovieRepository,
     MongoDbSuggestionRepository,
+    MovieDocumentMapper,
     SuggestionDocumentMapper,
 } from '@/Infrastructure/Persistence/MongoDb/Repositories/mod.ts';
 import {
@@ -33,6 +35,7 @@ export class Persistence implements Module {
 
         MongoDbServices.add(config, serviceCollection, [
             MongoDbSuggestionRepository.name,
+            MongoDbMovieRepository.name,
         ]);
 
         // Register InMemoryContext as singleton
@@ -95,12 +98,15 @@ export class Persistence implements Module {
                     )).getOrThrow();
                 const suggestionRepository = (await serviceProvider.getService<
                     MongoDbSuggestionRepository
-                >(
-                    MongoDbSuggestionRepository.name,
-                )).getOrThrow();
+                >(MongoDbSuggestionRepository.name)).getOrThrow();
+
+                const movieRepository = (await serviceProvider.getService<
+                    MongoDbMovieRepository
+                >(MongoDbMovieRepository.name)).getOrThrow();
 
                 const unitOfWork = new MongoDbUnitOfWork(mongoClient.session);
                 unitOfWork.registerRepository(suggestionRepository);
+                unitOfWork.registerRepository(movieRepository);
 
                 const interceptors = [
                     new PublishDomainEventsMongoDbUnitOfWorkInterceptor(
@@ -128,18 +134,18 @@ export class Persistence implements Module {
             },
         );
 
-        /*
+        
         serviceCollection.addScoped(
-            InMemoryTournamentRepository.name,
+            MongoDbMovieRepository.name,
             async (serviceProvider: ServiceProvider) => {
-                const context = (await serviceProvider.getService<InMemoryContext>(
-                    InMemoryContext.name,
-                )).getOrThrow();
+                const mongoClient =
+                    (await serviceProvider.getService<MongoDbClient>('MongoDbClient')).getOrThrow();
+                const mapper = new MovieDocumentMapper();
 
-                return new InMemoryTournamentRepository(context);
+                return new MongoDbMovieRepository(mongoClient, mapper);
             },
         );
-        */
+        
     }
 
     private registerQueries(serviceCollection: ServiceCollection): void {

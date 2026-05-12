@@ -20,6 +20,9 @@ export class MovieId extends UUIDEntityId{
 }
 
 export class Movie extends AggregateRoot<MovieId>{
+
+    private static readonly PRICE_PER_MIN: number = 0.15;
+
     private readonly _externalId: string;
     private _title: MovieTitle;
     private _duration: MovieDuration;
@@ -45,7 +48,7 @@ export class Movie extends AggregateRoot<MovieId>{
         this._genres = genres;
         this._ageRating = ageRating;
         this._posterUrl = posterUrl;
-        this._price = Money.create(0, "EUR");
+        this._price = Money.create(Movie.calculatePrice(duration.value), "EUR");
     }
 
     public static create(
@@ -73,6 +76,11 @@ export class Movie extends AggregateRoot<MovieId>{
         if(this.genres.length < 0){
           //  throw new InvalidMovieGenre()
         }
+    }
+
+    private static calculatePrice(movieDuration: number): number {
+        return movieDuration * Movie.PRICE_PER_MIN;
+
     }
 
     public get movieId(): MovieId {

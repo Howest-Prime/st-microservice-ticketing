@@ -1,24 +1,15 @@
-import { UUIDEntityId, AggregateRoot} from '@/Domain/Shared/mod.ts';
-import {
-    MovieTitle,
-    MovieDuration,
-    MovieGenre,
-    MovieAgeRating,
-    MoviePosterUrl,
-    InvalidGenresException,
- } from '@/Domain/Ticketing/Movies/mod.ts';
- import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
+import { AggregateRoot} from '@/Domain/Shared/mod.ts';
+import { 
+    InvalidGenresException, 
+    Money, 
+    MovieAgeRating, 
+    MovieDuration, 
+    MovieGenre, 
+    MovieId, 
+    MoviePosterUrl, 
+    MovieTitle 
+} from '@/Domain/Ticketing/Shared/mod.ts';
 
-
-export class MovieId extends UUIDEntityId{
-    private constructor(id?: string){
-        super(id);
-    }
-
-    public static create(id?: string){
-        return new MovieId(id);
-    } 
-}
 
 export class Movie extends AggregateRoot<MovieId>{
 

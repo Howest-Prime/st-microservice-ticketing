@@ -1,6 +1,6 @@
 import { ValueObject } from '@/Domain/Shared/mod.ts';
+import { InvalidPosterUrl } from '@/Domain/Ticketing/Shared/mod.ts';
 
-import { InvalidPosterUrl } from '@/Domain/Ticketing/Movies/mod.ts';
 
 export class MoviePosterUrl extends ValueObject {
 

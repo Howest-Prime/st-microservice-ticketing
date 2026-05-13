@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  testing:
+    name: Testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+    # Your QA steps will go here
+    
+  code-coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+    # Your coverage steps will go here

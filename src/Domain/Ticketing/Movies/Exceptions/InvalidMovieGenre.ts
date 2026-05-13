@@ -6,3 +6,9 @@ export class InvalidMovieGenre extends DomainException {
        super(`The genre "${genre}" is invalid. Expected a minimum length of ${minLength} characters.`)
     }
 }
+
+export class InvalidGenresException extends DomainException {
+    constructor() {
+        super(`Genres cannot be empty`);
+    }
+}

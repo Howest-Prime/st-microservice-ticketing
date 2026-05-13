@@ -5,6 +5,7 @@ import {
     MovieGenre,
     MovieAgeRating,
     MoviePosterUrl,
+    InvalidGenresException,
  } from '@/Domain/Ticketing/Movies/mod.ts';
  import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
 
@@ -73,8 +74,8 @@ export class Movie extends AggregateRoot<MovieId>{
     }
 
     protected validate(){
-        if(this.genres.length < 0){
-          //  throw new InvalidMovieGenre()
+        if(this.genres.length === 0){
+            throw new InvalidGenresException();
         }
     }
 

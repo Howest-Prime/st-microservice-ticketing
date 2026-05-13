@@ -1,7 +1,7 @@
 
 export { InvalidMovieTitle } from './Exceptions/InvalidMovieTitle.ts';
 export { InvalidMovieDuration } from './Exceptions/InvalidMovieDuration.ts';
-export { InvalidMovieGenre } from './Exceptions/InvalidMovieGenre.ts';
+export { InvalidMovieGenre, InvalidGenresException } from './Exceptions/InvalidMovieGenre.ts';
 export { InvalidPosterUrl } from './Exceptions/InvalidPosterUrl.ts';
 
 export { MovieTitle } from './ValueObjects/MovieTitle.ts';

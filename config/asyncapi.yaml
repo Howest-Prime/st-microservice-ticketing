@@ -24,20 +24,6 @@ servers:
                 virtualHost: /
 
 channels:
-    thirdparty.service.suggestions.sendcreatesuggestion:
-        address: thirdparty.service.suggestions.sendcreatesuggestion
-        title: Send create suggestion
-        messages:
-            SuggestionSendCreateSuggestion:
-                $ref: '#/components/messages/SuggestionSendCreateSuggestion'
-        bindings:
-            amqp:
-                is: routingKey
-                exchange:
-                    name: howestprime
-                    type: topic
-                    routingKey: thirdparty.service.suggestions.sendcreatesuggestion
-
     howestprime.movies.movie.movieregistered:
         address: howestprime.movies.movie.movieregistered
         title: Movie registered
@@ -52,41 +38,21 @@ channels:
                     type: topic
                     routingKey: howestprime.movies.movie.movieregistered
 
-    howestprime.ticketing.suggestions.created:
-        address: howestprime.ticketing.suggestions.created
-        title: Suggestion created
+    howestprime.movies.movieevent.bookingopened:
+        address: howestprime.movies.movieevent.bookingopened
+        title: Booking opened
         messages:
-            SuggestionCreated:
-                $ref: '#/components/messages/SuggestionCreated'
+            BookingOpened:
+                $ref: '#/components/messages/BookingOpened'
         bindings:
             amqp:
                 is: routingKey
                 exchange:
                     name: howestprime
                     type: topic
-                    routingKey: howestprime.ticketing.suggestions.created
+                    routingKey: howestprime.movies.movieevent.bookingopened
 
 operations:
-    WhenSuggestionSendCreateSuggestion:
-        action: receive
-        channel:
-            $ref: '#/channels/thirdparty.service.suggestions.sendcreatesuggestion'
-        description: |
-            Triggered when an external producer requests suggestion creation.
-            Consumes the message and delegates to the CreateSuggestion command use case.
-        messages:
-            - $ref: '#/channels/thirdparty.service.suggestions.sendcreatesuggestion/messages/SuggestionSendCreateSuggestion'
-
-    sendSuggestionCreated:
-        action: send
-        channel:
-            $ref: '#/channels/howestprime.ticketing.suggestions.created'
-        description: |
-            Triggered after a suggestion is created successfully.
-            Publishes the created suggestion payload for downstream consumers.
-        messages:
-            - $ref: '#/channels/howestprime.ticketing.suggestions.created/messages/SuggestionCreated'
-
     WhenMovieRegisteredSaveMovie:
         action: receive
         channel:
@@ -97,22 +63,18 @@ operations:
         messages:
             - $ref: '#/channels/howestprime.movies.movie.movieregistered/messages/MovieRegistered'
 
+    CreateOrderWhenBookingOpened:
+        action: receive
+        channel:
+            $ref: '#/channels/howestprime.movies.movieevent.bookingopened'
+        description: |
+            Triggered when a movie is registered in the Movies bounded context.
+            Consumes the message and delegates to the SaveMovie command use case.
+        messages:
+            - $ref: '#/channels/howestprime.movies.movieevent.bookingopened/messages/BookingOpened'
+
 components:
     messages:
-        SuggestionSendCreateSuggestion:
-            name: SuggestionSendCreateSuggestion
-            title: Suggestion create request
-            summary: Request message to create a suggestion.
-            payload:
-                $ref: '#/components/schemas/SuggestionSendCreateSuggestionPayload'
-
-        SuggestionCreated:
-            name: SuggestionCreated
-            title: Suggestion created
-            summary: Event message emitted after a suggestion is created.
-            payload:
-                $ref: '#/components/schemas/SuggestionCreatedPayload'
-
         MovieRegistered:
             name: MovieRegistered
             title: Movie registered
@@ -120,71 +82,14 @@ components:
             payload:
                 $ref: '#/components/schemas/MovieRegisteredPayload'
 
+        BookingOpened:
+            name: BookingOpened
+            title: Booking opened
+            summary: Event message emitted when a booking is opened.
+            payload:
+                $ref: '#/components/schemas/BookingOpenedPayload'
+
     schemas:
-        SuggestionSendCreateSuggestionPayload:
-            type: object
-            required:
-                - email
-                - title
-                - description
-            properties:
-                email:
-                    type: string
-                    format: email
-                    maxLength: 254
-                    description: Email address of the suggestion author.
-                    example: user@example.com
-                title:
-                    type: string
-                    minLength: 3
-                    maxLength: 120
-                    description: Short title of the suggestion.
-                    example: Improve booking performance
-                description:
-                    type: string
-                    minLength: 10
-                    maxLength: 2000
-                    description: Detailed suggestion text.
-                    example: Cache frequently requested movie data to reduce latency.
-
-        SuggestionCreatedPayload:
-            type: object
-            required:
-                - suggestionId
-                - email
-                - title
-                - description
-                - occurredOn
-            properties:
-                suggestionId:
-                    type: string
-                    format: uuid
-                    description: Identifier of the created suggestion.
-                    example: 8fdd8b8e-8de4-4b9a-8e16-868b72f4f469
-                email:
-                    type: string
-                    format: email
-                    maxLength: 254
-                    description: Email address of the suggestion author.
-                    example: user@example.com
-                title:
-                    type: string
-                    minLength: 3
-                    maxLength: 120
-                    description: Short title of the suggestion.
-                    example: Improve booking performance
-                description:
-                    type: string
-                    minLength: 10
-                    maxLength: 2000
-                    description: Detailed suggestion text.
-                    example: Cache frequently requested movie data to reduce latency.
-                occurredOn:
-                    type: string
-                    format: date-time
-                    description: UTC timestamp when the event occurred.
-                    example: '2026-03-24T10:15:30.000Z'
-
         MovieRegisteredPayload:
             type: object
             required:
@@ -225,3 +130,52 @@ components:
                     format: uri
                     description: URL of the movie poster.
                     example: https://example.com/posters/shawshank.jpg
+        
+        BookingOpenedPayload:
+            type: object
+            required:
+                - bookingId
+                - movieId
+                - room
+                - showtime
+                - numberOfStandardVisitors
+                - numberOfDiscountedVisitors
+                - seatNumbers
+            properties:
+                bookingId:
+                    type: string
+                    format: uuid
+                    description: Unique identifier for the booking.
+                    example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                movieId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the movie associated with the booking.
+                    example: 8fdd8b8e-8de4-4b9a-8e16-868b72f4f469
+                room:
+                    type: string
+                    minLength: 1
+                    description: The room name where the movie will be shown.
+                    example: Blue Room
+                showtime:
+                    type: string
+                    format: date-time
+                    description: The scheduled start time of the movie.
+                    example: '2026-06-01T19:30:00Z'
+                numberOfStandardVisitors:
+                    type: integer
+                    minimum: 0
+                    description: Count of standard ticket holders.
+                    example: 3
+                numberOfDiscountedVisitors:
+                    type: integer
+                    minimum: 0
+                    description: Count of discounted ticket holders.
+                    example: 1
+                seatNumbers:
+                    type: array
+                    items:
+                        type: string
+                    description: List of reserved seat numbers.
+                    example: ['A1', 'A2', 'A3', 'A4']
+

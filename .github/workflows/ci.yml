@@ -61,7 +61,7 @@ jobs:
         run: deno lint src
 
       - name: Run unit tests
-        run: deno test --allow-all
+        run: deno test --allow-all --coverage=coverage
 
       - name: Check coverage threshold
         run: |

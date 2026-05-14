@@ -1,16 +1,16 @@
 import { assertEquals, assertThrows } from '@std/assert';
+import { Movie } from '@/Domain/Ticketing/Movies/mod.ts';
 import {
-    Movie,
+    InvalidGenresException,
     MovieAgeRating,
     MovieDuration,
     MovieGenre,
+    MovieId,
     MoviePosterUrl,
     MovieTitle,
-    InvalidGenresException,
-} from '@/Domain/Ticketing/Movies/mod.ts';
-import { MovieAgeRatingValue } from '@/Domain/Ticketing/Movies/ValueObjects/MovieAgeRating.ts';
-import { MovieId } from '@/Domain/Ticketing/Movies/Movie.ts';
-import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
+    Money,
+} from '@/Domain/Ticketing/Shared/mod.ts';
+import { MovieAgeRatingValue } from '@/Domain/Ticketing/Shared/ValueObjects/MovieAgeRating.ts';
 
 const makeMovie = () =>
     Movie.create(

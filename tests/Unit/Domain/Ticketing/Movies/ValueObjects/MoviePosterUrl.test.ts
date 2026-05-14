@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from '@std/assert';
-import { InvalidPosterUrl, MoviePosterUrl } from '@/Domain/Ticketing/Movies/mod.ts';
+import { InvalidPosterUrl, MoviePosterUrl } from '@/Domain/Ticketing/Shared/mod.ts';
 
 Deno.test('[Unit] - MoviePosterUrl - create - valid https url - returns value object', () => {
     // Arrange

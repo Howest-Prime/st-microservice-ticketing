@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from '@std/assert';
-import { InvalidMovieDuration, MovieDuration } from '@/Domain/Ticketing/Movies/mod.ts';
+import { InvalidMovieDuration, MovieDuration } from '@/Domain/Ticketing/Shared/mod.ts';
 
 Deno.test('[Unit] - MovieDuration - create - valid input - returns value object', () => {
     // Arrange

@@ -5,7 +5,7 @@ import {
     InvalidMovieDuration,
     InvalidMovieTitle,
     InvalidPosterUrl,
-} from '@/Domain/Ticketing/Movies/mod.ts';
+} from '@/Domain/Ticketing/Shared/mod.ts';
 import { createMockUnitOfWork } from '@/tests/Unit/Application/Shared/mod.ts';
 
 const mockLogger: Logger = {

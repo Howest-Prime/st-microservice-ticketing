@@ -2,7 +2,7 @@ import { assertEquals } from '@std/assert';
 import {
     MovieAgeRating,
     MovieAgeRatingValue,
-} from '@/Domain/Ticketing/Movies/ValueObjects/MovieAgeRating.ts';
+} from '@/Domain/Ticketing/Shared/ValueObjects/MovieAgeRating.ts';
 
 Deno.test('[Unit] - MovieAgeRating - create - All rating - returns value object with zero value', () => {
     // Act

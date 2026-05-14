@@ -1,6 +1,5 @@
 import { Logger, UnitOfWork, UseCase } from '@/Application/Ports/mod.ts';
-import { BookingId, MovieInfo, Order, Seat, Ticket, VisitorTypeLabel } from '@/Domain/Ticketing/Order/mod.ts';
-import { MovieId } from '@/Domain/Ticketing/Shared/mod.ts';
+import { MovieInfo, Order, Seat, Ticket, VisitorTypeLabel } from '@/Domain/Ticketing/Order/mod.ts';
 import { MovieRepository } from '@/Domain/Ticketing/Movies/mod.ts';
 import { MovieNotFoundException } from '@/Application/Ticketing/Orders/Exceptions/MovieNotFoundException.ts';
 
@@ -27,9 +26,8 @@ export class CreateOrderFromBookingUseCase implements UseCase<CreateOrderFromBoo
         const result = await this._unitOfWork.do<string>(async () => {
             this._logger.debug(`Creating order from booking`, {input});
 
-            const movieId = MovieId.create(input.movieId);
             const movie = (await this._unitOfWork.getRepository<MovieRepository>('Movie')
-                                .byId(movieId))
+                                .byExternalId(input.movieId))
                                 .orElseThrow(() => new MovieNotFoundException(input.movieId));
 
             const movieInfo = MovieInfo.create(
@@ -53,8 +51,7 @@ export class CreateOrderFromBookingUseCase implements UseCase<CreateOrderFromBoo
                 ),
             ];
 
-            const newBookingId = BookingId.create(input.bookingId);
-            const newOrder = Order.create(newBookingId, tickets);
+            const newOrder = Order.create(input.bookingId, tickets);
 
             await this._unitOfWork.save(newOrder);
 

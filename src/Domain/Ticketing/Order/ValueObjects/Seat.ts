@@ -2,8 +2,8 @@ import { ValueObject } from '@/Domain/Shared/mod.ts';
 import { InvalidSeatException } from '@/Domain/Ticketing/Order/mod.ts';
 
 export enum VisitorTypeLabel{
-    Standard,
-    Discounted
+    Standard = "Standard",
+    Discounted = "Discounted"
 }
 
 export class Seat extends ValueObject {

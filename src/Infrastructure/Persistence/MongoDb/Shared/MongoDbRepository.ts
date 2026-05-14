@@ -11,7 +11,7 @@ export abstract class MongoDbRepository<
     public static readonly collectionName: string = '';
     protected readonly _dbClient: MongoDbClient;
     private readonly _collectionName: string;
-    private readonly _documentMapper: DocumentMapper<E>;
+    protected readonly _documentMapper: DocumentMapper<E>;
 
     constructor(
         dbClient: MongoDbClient,

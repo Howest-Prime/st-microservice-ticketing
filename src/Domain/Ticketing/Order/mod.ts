@@ -13,7 +13,7 @@ export { FirstName, LastName } from './ValueObjects/CustomerName.ts';
 export { CustomerSalutation } from './ValueObjects/CostumerSalutation.ts';
 export { CustomerEmail } from './ValueObjects/CustomerEmail.ts';
 export { Customer } from './ValueObjects/Customer.ts';
-export { OrderStatus } from './ValueObjects/OrderStatus.ts';
+export { OrderStatus, OrderStatusState } from './ValueObjects/OrderStatus.ts';
 export { Ticket } from './Ticket.ts';
 
 export { Order } from './Order.ts';

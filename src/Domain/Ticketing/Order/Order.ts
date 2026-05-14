@@ -6,6 +6,7 @@ import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
 export class Order extends AggregateRoot<OrderId> {
 
     private readonly _bookingId: BookingId;
+    private readonly _externalBookingId: string;
     private _customer: Customer | null = null;
     private readonly _tickets: Ticket[];
     private _status: OrderStatus = OrderStatus.Open;;
@@ -13,16 +14,17 @@ export class Order extends AggregateRoot<OrderId> {
 
     private readonly _price: Money;
 
-    private constructor(orderId: OrderId, bookingId: BookingId, tickets: Ticket[]){
+    private constructor(orderId: OrderId, bookingId: BookingId, externalBookingId: string, tickets: Ticket[]){
         super(orderId);
         this._bookingId = bookingId;
+        this._externalBookingId = externalBookingId;
         this._tickets = tickets;
         const totalAmount = tickets.reduce((sum, ticket) => sum + ticket.price.amount, 0);
         this._price = Money.create(totalAmount, 'EUR');
     }
 
-    public static create (bookingId: BookingId, tickets: Ticket[]): Order {
-        const newOrder = new Order(OrderId.create(), bookingId, tickets);
+    public static create (externalBookingId: string, tickets: Ticket[]): Order {
+        const newOrder = new Order(OrderId.create(), BookingId.create(), externalBookingId, tickets);
         newOrder.validate();
         return newOrder;
     }
@@ -93,6 +95,10 @@ export class Order extends AggregateRoot<OrderId> {
 
     public get bookingId(): BookingId {
         return this._bookingId;
+    }
+
+    public get externalBookingId(): string {
+        return this._externalBookingId;
     }
 
     public get customer(): Customer | null {

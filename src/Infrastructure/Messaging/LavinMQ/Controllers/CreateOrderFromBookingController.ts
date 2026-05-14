@@ -7,7 +7,7 @@ export interface CreateOrderFromBookingRequest {
     bookingId: string,
     movieId: string,
     room: string,
-    showtime: Date,
+    showtime: string,
     numberOfStandardVisitors: number,
     numberOfDiscountedVisitors: number,
     seats: number[]
@@ -24,7 +24,7 @@ export class CreateOrderFromBookingController implements AmqpController<CreateOr
             bookingId: request.bookingId,
             movieId: request.movieId,
             room: request.room,
-            showtime: request.showtime,
+            showtime: new Date(request.showtime),
             amountOfStandardVisitors: request.numberOfStandardVisitors,
             amountOfDiscountedVisitors: request.numberOfDiscountedVisitors,
             seats: request.seats,

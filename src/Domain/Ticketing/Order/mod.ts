@@ -1,4 +1,5 @@
 
+export { AlreadyHasTicketsException } from './Exceptions/AlreadyHasTicketsException.ts';
 export { InvalidSeatException } from './Exceptions/InvalidSeatException.ts';
 export { InvalidNameException } from './Exceptions/InvalidNameException.ts'
 export { InvalidOrderStatusTransition } from './Exceptions/InvalidOrderStatusTransition.ts'
@@ -14,6 +15,8 @@ export { CustomerEmail } from './ValueObjects/CustomerEmail.ts';
 export { Customer } from './ValueObjects/Customer.ts';
 export { OrderStatus } from './ValueObjects/OrderStatus.ts';
 export { Ticket } from './Ticket.ts';
+
+export { Order } from './Order.ts';
 
 
 

@@ -14,9 +14,11 @@ import {
     PublishDomainEventsMongoDbUnitOfWorkInterceptor,
 } from '@/Infrastructure/Persistence/MongoDb/mod.ts';
 import {
-MongoDbMovieRepository,
+    MongoDbMovieRepository,
+    MongoDbOrderRepository,
     MongoDbSuggestionRepository,
     MovieDocumentMapper,
+    OrderDocumentMapper,
     SuggestionDocumentMapper,
 } from '@/Infrastructure/Persistence/MongoDb/Repositories/mod.ts';
 import {
@@ -36,6 +38,7 @@ export class Persistence implements Module {
         MongoDbServices.add(config, serviceCollection, [
             MongoDbSuggestionRepository.name,
             MongoDbMovieRepository.name,
+            MongoDbOrderRepository.name,
         ]);
 
         // Register InMemoryContext as singleton
@@ -104,9 +107,14 @@ export class Persistence implements Module {
                     MongoDbMovieRepository
                 >(MongoDbMovieRepository.name)).getOrThrow();
 
+                const orderRepository = (await serviceProvider.getService<
+                    MongoDbOrderRepository
+                >(MongoDbOrderRepository.name)).getOrThrow();
+
                 const unitOfWork = new MongoDbUnitOfWork(mongoClient.session);
                 unitOfWork.registerRepository(suggestionRepository);
                 unitOfWork.registerRepository(movieRepository);
+                unitOfWork.registerRepository(orderRepository);
 
                 const interceptors = [
                     new PublishDomainEventsMongoDbUnitOfWorkInterceptor(
@@ -145,7 +153,17 @@ export class Persistence implements Module {
                 return new MongoDbMovieRepository(mongoClient, mapper);
             },
         );
-        
+
+        serviceCollection.addScoped(
+            MongoDbOrderRepository.name,
+            async (serviceProvider: ServiceProvider) => {
+                const mongoClient =
+                    (await serviceProvider.getService<MongoDbClient>('MongoDbClient')).getOrThrow();
+                const mapper = new OrderDocumentMapper();
+
+                return new MongoDbOrderRepository(mongoClient, mapper);
+            },
+        );
     }
 
     private registerQueries(serviceCollection: ServiceCollection): void {

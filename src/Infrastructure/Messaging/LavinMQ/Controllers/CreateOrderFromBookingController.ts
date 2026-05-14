@@ -3,7 +3,7 @@ import { UseCase } from '@/Application/Ports/mod.ts';
 import { CreateOrderFromBookingInput } from '@/Application/Ticketing/Orders/mod.ts';
 
 
-export interface CreateOrderFromBookingRequestBody {
+export interface CreateOrderFromBookingRequest {
     bookingId: string,
     movieId: string,
     room: string,
@@ -13,13 +13,13 @@ export interface CreateOrderFromBookingRequestBody {
     seats: number[]
 }
 
-export class CreateOrderFromBookingController implements AmqpController<CreateOrderFromBookingRequestBody> {
+export class CreateOrderFromBookingController implements AmqpController<CreateOrderFromBookingRequest> {
     
     public constructor(
         private readonly _useCase: UseCase<CreateOrderFromBookingInput, string>
     ) {}
     
-    async handle(request: CreateOrderFromBookingRequestBody): Promise<void> {
+    async handle(request: CreateOrderFromBookingRequest): Promise<void> {
         const input: CreateOrderFromBookingInput = {
             bookingId: request.bookingId,
             movieId: request.movieId,

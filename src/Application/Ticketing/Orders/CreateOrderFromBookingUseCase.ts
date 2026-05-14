@@ -15,7 +15,7 @@ export interface CreateOrderFromBookingInput {
     seats: number[]
 }
 
-export class CreateOrderFromBooking implements UseCase<CreateOrderFromBookingInput, string>{
+export class CreateOrderFromBookingUseCase implements UseCase<CreateOrderFromBookingInput, string>{
 
     public constructor(
         private readonly _unitOfWork: UnitOfWork,

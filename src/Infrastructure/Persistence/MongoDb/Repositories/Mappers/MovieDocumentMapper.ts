@@ -1,19 +1,20 @@
 import type { Document } from '@mongodb';
 
-import { Movie, MovieId } from '@/Domain/Ticketing/Movies/Movie.ts';
 import {
     MovieTitle,
     MovieDuration,
     MovieGenre,
     MovieAgeRating,
     MoviePosterUrl,
-} from '@/Domain/Ticketing/Movies/mod.ts';
-import { MovieAgeRatingValue } from '@/Domain/Ticketing/Movies/ValueObjects/MovieAgeRating.ts';
+    MovieAgeRatingValue,
+    MovieId,
+} from '@/Domain/Ticketing/Shared/mod.ts';
 import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
 import {
     type DocumentMapper,
     serializeObjectToDocument,
 } from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
+import { Movie } from '@/Domain/Ticketing/Movies/mod.ts';
 
 export class MovieDocumentMapper implements DocumentMapper<Movie> {
     toDocument(movie: Movie): Document {

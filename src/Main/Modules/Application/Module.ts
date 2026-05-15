@@ -1,21 +1,18 @@
 import { ServiceCollection, ServiceProvider } from '@domaincrafters/di';
 
 import {
-    GetSuggestionByIdQueryUseCase,
-    type GetSuggestionByIdQueryUseCaseInput,
     ListSuggestionsQueryUseCase,
     WhenSuggestionCreatedConsoleLogSuggestion,
 } from '@/Application/Ticketing/Suggestions/mod.ts';
 import { domainEventPolicies } from '@/Application/mod.ts';
 import type { Logger, UseCase } from '@/Application/Ports/mod.ts';
 import type {
-    SuggestionByIdReadModel,
+GetOrderByBookingIdData,
     SuggestionListItemReadModel,
 } from '@/Application/Ports/Queries/mod.ts';
 import { DomainEventRegistry } from '@/Infrastructure/Events/Shared/mod.ts';
 import { PolicyDomainEventListener } from '@/Infrastructure/Events/mod.ts';
 import {
-    MongoDbGetSuggestionByIdQuery,
     MongoDbListSuggestionsQuery,
 } from '@/Infrastructure/Persistence/MongoDb/Queries/mod.ts';
 import { MongoDbUnitOfWork } from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
@@ -23,7 +20,8 @@ import { Config, ConsoleLogger } from '@/Infrastructure/Shared/mod.ts';
 import { Module } from '@/Main/Modules/Shared/mod.ts';
 import { OnlinePaymentService } from '@/Infrastructure/Payment/mod.ts';
 import { SaveMovieUseCase, SaveMovieUseCaseInput } from '@/Application/Ticketing/Movies/mod.ts';
-import { AddCustomerToOrderUseCase, AddCustomerToOrderUseCaseInput, CreateOrderFromBookingUseCase, CreateOrderFromBookingInput } from '@/Application/Ticketing/Orders/mod.ts';
+import { AddCustomerToOrderUseCase, AddCustomerToOrderUseCaseInput, CreateOrderFromBookingUseCase, CreateOrderFromBookingInput, GetOrderByBookingIdUseCase, GetOrderByBookingIdInput } from '@/Application/Ticketing/Orders/mod.ts';
+import { MongoDbGetOrderByBookingIdQuery } from '@/Infrastructure/Persistence/MongoDb/Queries/Orders/mod.ts';
 
 export class Application implements Module {
     add(serviceCollection: ServiceCollection, _config: Config): void {
@@ -119,19 +117,19 @@ export class Application implements Module {
         );
 
         serviceCollection.addScoped(
-            GetSuggestionByIdQueryUseCase.name,
+            GetOrderByBookingIdUseCase.name,
             async (serviceProvider: ServiceProvider) => {
-                const query = (await serviceProvider.getService<MongoDbGetSuggestionByIdQuery>(
-                    MongoDbGetSuggestionByIdQuery.name,
+                const query = (await serviceProvider.getService<MongoDbGetOrderByBookingIdQuery>(
+                    MongoDbGetOrderByBookingIdQuery.name,
                 )).getOrThrow();
 
                 const logger = (await serviceProvider.getService<Logger>(ConsoleLogger.name))
                     .getOrThrow();
 
                 const useCase: UseCase<
-                    GetSuggestionByIdQueryUseCaseInput,
-                    SuggestionByIdReadModel
-                > = new GetSuggestionByIdQueryUseCase(
+                    GetOrderByBookingIdInput,
+                    GetOrderByBookingIdData
+                > = new GetOrderByBookingIdUseCase(
                     query,
                     logger,
                 );

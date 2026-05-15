@@ -1,5 +1,5 @@
 import { Logger, UnitOfWork, UseCase } from '@/Application/Ports/mod.ts';
-import { Customer, CustomerEmail, CustomerSalutation, FirstName, LastName, OrderRepository } from '@/Domain/Ticketing/Order/mod.ts';
+import { Customer, CustomerEmail, CustomerSalutation, FirstName, LastName, OrderId, OrderRepository } from '@/Domain/Ticketing/Order/mod.ts';
 import { OrderNotFoundException } from '@/Application/Ticketing/Orders/mod.ts';
 
 
@@ -23,8 +23,9 @@ export class AddCustomerToOrderUseCase implements UseCase<AddCustomerToOrderUseC
 
         await this._UoW.do<void>(async () => {
 
+            const orderId = OrderId.create(input.orderId);
             const order = (await this._UoW.getRepository<OrderRepository>('Order')
-                            .byExternalId(input.orderId))
+                            .byId(orderId))
                             .orElseThrow(() => new OrderNotFoundException(input.orderId));
             
             order.acceptTermsIfAgreed(input.aggreToTerms);

@@ -4,7 +4,7 @@ import {
     ListSuggestionsController,
 } from '@/Infrastructure/WebApi/Controllers/mod.ts';
 import { type Router, RouterBuilder, type Routes } from '@/Infrastructure/WebApi/Shared/mod.ts';
-import { AddCustomerInformationToOrderController } from '@/Infrastructure/WebApi/Controllers/Orders/AddCustomerInformationToOrderController.ts';
+import { AddCustomerInformationToOrderController, GetOrderByBookingIdController } from '@/Infrastructure/WebApi/Controllers/Orders/mod.ts';
 
 export class WebApiRoutes implements Routes {
     map(routerBuilder: RouterBuilder): Router {
@@ -13,6 +13,7 @@ export class WebApiRoutes implements Routes {
             .mapPost(CreateSuggestionController.name, '/api/suggestions')
             .mapGet(GetSuggestionByIdController.name, '/api/suggestions/:suggestionId')
             .mapPost(AddCustomerInformationToOrderController.name, '/api/orders/:orderId/customer')
+            .mapGet(GetOrderByBookingIdController.name, '/api/orders/:bookingId')
             .build();
     }
 }

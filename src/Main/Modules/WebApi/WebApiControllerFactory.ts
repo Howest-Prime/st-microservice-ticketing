@@ -23,6 +23,8 @@ import {
     type WebApiController,
 } from '@/Infrastructure/WebApi/Shared/mod.ts';
 import { IllegalStateException } from '@domaincrafters/std';
+import { AddCustomerInformationToOrderController } from '@/Infrastructure/WebApi/Controllers/Orders/mod.ts';
+import { AddCustomerToOrderUseCase, AddCustomerToOrderUseCaseInput } from '@/Application/Ticketing/Orders/mod.ts';
 
 export class WebApiControllerFactory implements ControllerFactory {
     private readonly _serviceProvider: ServiceProvider;
@@ -43,12 +45,21 @@ export class WebApiControllerFactory implements ControllerFactory {
                 return await this.createListSuggestionsController();
             case GetSuggestionByIdController.name:
                 return await this.createGetSuggestionByIdController();
+            case AddCustomerInformationToOrderController.name:
+                return await this.createAddCustomerInformationToOrderController();
 
             default:
                 throw new IllegalStateException(
                     `Controller for route ${ctx.routeName} is not defined`,
                 );
         }
+    }
+    private async createAddCustomerInformationToOrderController(): Promise<AddCustomerInformationToOrderController> {
+        const useCase = (await this._serviceProvider.getService<
+            UseCase<AddCustomerToOrderUseCaseInput, void>
+        >(AddCustomerToOrderUseCase.name)).getOrThrow();
+
+        return new AddCustomerInformationToOrderController(useCase);
     }
 
     private async createCreateSuggestionController(): Promise<CreateSuggestionController> {

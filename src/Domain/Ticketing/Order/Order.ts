@@ -1,5 +1,5 @@
 import { AggregateRoot } from '@/Domain/Shared/mod.ts';
-import { BookingId, Customer, InvalidTicketCountException, OrderId, OrderMustHaveAtLeastOneTicketException, OrderStatus, Ticket, VisitorTypeLabel } from '@/Domain/Ticketing/Order/mod.ts';
+import { BookingId, CannotAcceptTermsException, CannotAddCustomerInfoException, CannotCancelOrderException, CannotPayOrderException, CannotReleaseTicketsException, Customer, InvalidTicketCountException, OrderId, OrderMustHaveAtLeastOneTicketException, OrderStatus, Ticket, TermsNotAcceptedException, VisitorTypeLabel } from '@/Domain/Ticketing/Order/mod.ts';
 import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
 
 
@@ -30,33 +30,34 @@ export class Order extends AggregateRoot<OrderId> {
     }
 
     public pay(): void {
-        if(this.isStatusOpen() && this.isTermsAccepted()){
-            this._status = this._status.transitionTo(OrderStatus.Paid);
-        }
+        if(!this.isStatusOpen()) throw new CannotPayOrderException();
+        if(!this.isTermsAccepted()) throw new TermsNotAcceptedException();
+        this._status = this._status.transitionTo(OrderStatus.Paid);
     }
 
     public releaseTickets(): void {
-        if(this.isStatusPaid()){
-            this._status = this.status.transitionTo(OrderStatus.TicketReleased);
-        }
+        if(!this.isStatusPaid()) throw new CannotReleaseTicketsException();
+        this._status = this.status.transitionTo(OrderStatus.TicketReleased);
     }
 
     public cancel(): void {
-        if(this.isStatusOpen()){
-            this._status = this.status.transitionTo(OrderStatus.Cancelled);
-        }
+        if(!this.isStatusOpen()) throw new CannotCancelOrderException();
+        this._status = this.status.transitionTo(OrderStatus.Cancelled);
     }
 
     public acceptTerms(): void {
-        if(this.isStatusOpen()){
-            this._agrreeToTerms = true;
-        }
+        if(!this.isStatusOpen()) throw new CannotAcceptTermsException();
+        this._agrreeToTerms = true;
+    }
+
+    public acceptTermsIfAgreed(agreed: boolean): void {
+        if(agreed) this.acceptTerms();
     }
 
     public addCustomerInfomations(customer: Customer): void {
-        if(this.isStatusOpen() && this.isTermsAccepted()){
-            this._customer = customer;
-        }
+        if(!this.isStatusOpen()) throw new CannotAddCustomerInfoException();
+        if(!this.isTermsAccepted()) throw new TermsNotAcceptedException();
+        this._customer = customer;
     }
 
     public isStatusOpen(): boolean {

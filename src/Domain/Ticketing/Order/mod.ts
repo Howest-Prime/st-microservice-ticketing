@@ -7,6 +7,12 @@ export { OrderMustHaveAtLeastOneTicketException } from './Exceptions/OrderMustHa
 export { DuplicateSeatException } from './Exceptions/DuplicateSeatException.ts';
 export { InvalidTicketCountException } from './Exceptions/InvalidTicketCountException.ts';
 export { InvalidCustomerSalutationException } from './Exceptions/InvalidCustomerSalutationException.ts';
+export { CannotAcceptTermsException } from './Exceptions/CannotAcceptTermsException.ts';
+export { CannotCancelOrderException } from './Exceptions/CannotCancelOrderException.ts';
+export { TermsNotAcceptedException } from './Exceptions/TermsNotAcceptedException.ts';
+export { CannotPayOrderException } from './Exceptions/CannotPayOrderException.ts';
+export { CannotReleaseTicketsException } from './Exceptions/CannotReleaseTicketsException.ts';
+export { CannotAddCustomerInfoException } from './Exceptions/CannotAddCustomerInfoException.ts';
 
 export { MovieInfo } from './ValueObjects/MovieInfo.ts';
 export { Seat, VisitorTypeLabel } from './ValueObjects/Seat.ts';

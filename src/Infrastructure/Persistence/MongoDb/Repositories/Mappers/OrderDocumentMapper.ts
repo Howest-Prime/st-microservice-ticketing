@@ -4,7 +4,7 @@ import {
     serializeObjectToDocument,
 } from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
 import { Order } from '@/Domain/Ticketing/Order/Order.ts';
-import { BookingId, MovieInfo, OrderId, OrderStatus, OrderStatusState, Seat, Ticket, VisitorTypeLabel } from '@/Domain/Ticketing/Order/mod.ts';
+import { BookingId, Customer, CustomerEmail, CustomerSalutation, FirstName, LastName, MovieInfo, OrderId, OrderStatus, OrderStatusState, Seat, Ticket, VisitorTypeLabel } from '@/Domain/Ticketing/Order/mod.ts';
 import { Money, MovieAgeRating, MovieAgeRatingValue, MovieDuration, MovieGenre, MovieId, MoviePosterUrl, MovieTitle } from '@/Domain/Ticketing/Shared/mod.ts';
 
 export class OrderDocumentMapper implements DocumentMapper<Order> {
@@ -14,24 +14,34 @@ export class OrderDocumentMapper implements DocumentMapper<Order> {
             externalBookingId: order.externalBookingId,
             status: order.status.status,
             agreedToTerms: order.aggredToTerms,
-            priceAmount: order.price.amount,
-            priceCurrency: order.price.currency,
+            customer: order.customer ? {
+                salutation: order.customer.salutation.value,
+                firstName: order.customer.firstName.name,
+                lastName: order.customer.lastName.name,
+                email: order.customer.email.value,
+            } : null,
             tickets: order.tickets.map((ticket) => ({
                 id: ticket.id.toString(),
-                movieInfoId: ticket.movieInfo.Id.toString(),
-                movieInfoTitle: ticket.movieInfo.title.value,
-                movieInfoDuration: ticket.movieInfo.duration.value,
-                movieInfoGenres: ticket.movieInfo.genres.map((g) => g.value),
-                movieInfoAgeRating: ticket.movieInfo.ageRating.Value,
-                movieInfoPosterUrl: ticket.movieInfo.posterUrl.value,
-                movieInfoPriceAmount: ticket.movieInfo.price.amount,
-                movieInfoPriceCurrency: ticket.movieInfo.price.currency,
-                seatNumber: ticket.seat.seatNumber,
-                seatVisitorType: ticket.seat.seatVisitorType,
+                movieInfo: {
+                    id: ticket.movieInfo.Id.toString(),
+                    title: ticket.movieInfo.title.value,
+                    duration: ticket.movieInfo.duration.value,
+                    genres: ticket.movieInfo.genres.map((g) => g.value),
+                    ageRating: ticket.movieInfo.ageRating.Value,
+                    posterUrl: ticket.movieInfo.posterUrl.value,
+                    priceAmount: ticket.movieInfo.price.amount,
+                    priceCurrency: ticket.movieInfo.price.currency,
+                },
+                seat: {
+                    number: ticket.seat.seatNumber,
+                    visitorType: ticket.seat.seatVisitorType,
+                },
                 room: ticket.room,
                 showtime: ticket.showtime.toISOString(),
-                priceAmount: ticket.price.amount,
-                priceCurrency: ticket.price.currency,
+                price: {
+                    amount: ticket.price.amount,
+                    currency: ticket.price.currency,
+                },
             })),
         });
     }
@@ -43,9 +53,8 @@ export class OrderDocumentMapper implements DocumentMapper<Order> {
             document.externalBookingId as string,
             document.status as OrderStatusState,
             document.agreedToTerms as boolean,
-            document.priceAmount as number,
-            document.priceCurrency as string,
             (document.tickets ?? []) as Document[],
+            (document.customer ?? null) as Document | null,
         );
     }
 
@@ -55,9 +64,8 @@ export class OrderDocumentMapper implements DocumentMapper<Order> {
         externalBookingId: string,
         status: OrderStatusState,
         agreedToTerms: boolean,
-        priceAmount: number,
-        priceCurrency: string,
         tickets: Document[],
+        customer: Document | null,
     ): Order {
         const order = Object.create(Order.prototype);
 
@@ -66,30 +74,40 @@ export class OrderDocumentMapper implements DocumentMapper<Order> {
         order._externalBookingId = externalBookingId;
         order._status = OrderStatus.create(status ?? OrderStatusState.Open);
         order._agrreeToTerms = agreedToTerms;
-        order._price = Money.create(priceAmount, priceCurrency);
-        order._customer = null;
-        order._domainEvents = [];
         order._tickets = tickets.map((t) => this.reconstituteTicketFromDocument(t));
+        order._price = Money.create(
+            order._tickets.reduce((sum: number, t: Ticket) => sum + t.price.amount, 0),
+            order._tickets[0].price.currency,
+        );
+        order._customer = customer ? Customer.create(
+            CustomerSalutation.create(customer.salutation as string),
+            FirstName.create(customer.firstName as string),
+            LastName.create(customer.lastName as string),
+            CustomerEmail.create(customer.email as string),
+        ) : null;
+        order._domainEvents = [];
 
         return order;
     }
 
     private reconstituteTicketFromDocument(t: Document): Ticket {
         const ticket = Object.create(Ticket.prototype);
+        const movieInfo = t.movieInfo as Document;
+        const seat = t.seat as Document;
 
         ticket._id = MovieId.create(t.id as string);
         ticket._movieInfo = MovieInfo.create(
-            MovieId.create(t.movieInfoId as string),
-            MovieTitle.create(t.movieInfoTitle as string),
-            MovieDuration.create(t.movieInfoDuration as number),
-            (t.movieInfoGenres as string[]).map((g) => MovieGenre.create(g)),
-            MovieAgeRating.create(t.movieInfoAgeRating as MovieAgeRatingValue),
-            MoviePosterUrl.create(t.movieInfoPosterUrl as string),
+            MovieId.create(movieInfo.id as string),
+            MovieTitle.create(movieInfo.title as string),
+            MovieDuration.create(movieInfo.duration as number),
+            (movieInfo.genres as string[]).map((g) => MovieGenre.create(g)),
+            MovieAgeRating.create(movieInfo.ageRating as MovieAgeRatingValue),
+            MoviePosterUrl.create(movieInfo.posterUrl as string),
         );
-        ticket._seat = Seat.create(t.seatNumber as number, t.seatVisitorType as VisitorTypeLabel);
+        ticket._seat = Seat.create(seat.number as number, seat.visitorType as VisitorTypeLabel);
         ticket._room = t.room as string;
         ticket._showtime = new Date(t.showtime as string);
-        ticket._price = Money.create(t.priceAmount as number, t.priceCurrency as string);
+        ticket._price = Money.create((t.price as Document).amount as number, (t.price as Document).currency as string);
 
         return ticket;
     }

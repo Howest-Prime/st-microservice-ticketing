@@ -27,6 +27,8 @@ export class AddCustomerToOrderUseCase implements UseCase<AddCustomerToOrderUseC
                             .byExternalId(input.orderId))
                             .orElseThrow(() => new OrderNotFoundException(input.orderId));
             
+            order.acceptTermsIfAgreed(input.aggreToTerms);
+
             const customer = Customer.create(
                 CustomerSalutation.create(input.salutation),
                 FirstName.create(input.firstName),

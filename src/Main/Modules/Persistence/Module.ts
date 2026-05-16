@@ -16,9 +16,11 @@ import {
 import {
     MongoDbMovieRepository,
     MongoDbOrderRepository,
+    MongoDbPaymentRepository,
     MongoDbSuggestionRepository,
     MovieDocumentMapper,
     OrderDocumentMapper,
+    PaymentDocumentMapper,
     SuggestionDocumentMapper,
 } from '@/Infrastructure/Persistence/MongoDb/Repositories/mod.ts';
 import {
@@ -40,6 +42,7 @@ export class Persistence implements Module {
             MongoDbSuggestionRepository.name,
             MongoDbMovieRepository.name,
             MongoDbOrderRepository.name,
+            MongoDbPaymentRepository.name,
         ]);
 
         // Register InMemoryContext as singleton
@@ -112,10 +115,15 @@ export class Persistence implements Module {
                     MongoDbOrderRepository
                 >(MongoDbOrderRepository.name)).getOrThrow();
 
+                const paymentRepository = (await serviceProvider.getService<
+                    MongoDbPaymentRepository
+                >(MongoDbPaymentRepository.name)).getOrThrow();
+
                 const unitOfWork = new MongoDbUnitOfWork(mongoClient.session);
                 unitOfWork.registerRepository(suggestionRepository);
                 unitOfWork.registerRepository(movieRepository);
                 unitOfWork.registerRepository(orderRepository);
+                unitOfWork.registerRepository(paymentRepository);
 
                 const interceptors = [
                     new PublishDomainEventsMongoDbUnitOfWorkInterceptor(
@@ -143,7 +151,6 @@ export class Persistence implements Module {
             },
         );
 
-        
         serviceCollection.addScoped(
             MongoDbMovieRepository.name,
             async (serviceProvider: ServiceProvider) => {
@@ -163,6 +170,17 @@ export class Persistence implements Module {
                 const mapper = new OrderDocumentMapper();
 
                 return new MongoDbOrderRepository(mongoClient, mapper);
+            },
+        );
+
+        serviceCollection.addScoped(
+            MongoDbPaymentRepository.name,
+            async (serviceProvider: ServiceProvider) => {
+                const mongoClient =
+                    (await serviceProvider.getService<MongoDbClient>('MongoDbClient')).getOrThrow();
+                const mapper = new PaymentDocumentMapper();
+
+                return new MongoDbPaymentRepository(mongoClient, mapper);
             },
         );
     }
@@ -196,7 +214,6 @@ export class Persistence implements Module {
                 return new MongoDbGetOrderByBookingIdQuery(mongoClient);
             },
         );
-        
 
         /*
         serviceCollection.addScoped(

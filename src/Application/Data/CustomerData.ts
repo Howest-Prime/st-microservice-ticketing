@@ -1,7 +1,6 @@
-
 export interface CustomerData {
-    salutation: string,
-    firstName: string,
-    lastName: string,
-    email: string
+    salutation: string;
+    firstName: string;
+    lastName: string;
+    email: string;
 }

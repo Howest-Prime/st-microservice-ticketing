@@ -16,6 +16,7 @@ import {
     TermsNotAcceptedException,
     Ticket,
     VisitorTypeLabel,
+    OrderNotOpenForPaymentException,
 } from '@/Domain/Ticketing/Order/mod.ts';
 import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
 
@@ -88,6 +89,12 @@ export class Order extends AggregateRoot<OrderId> {
         ));
     }
 
+    public ensureIsOpenForPayment(): void {
+        if (!this.isStatusOpen()) {
+            throw new OrderNotOpenForPaymentException(this._id.value);
+        }
+    }
+
     public cancel(): void {
         if (!this.isStatusOpen()) throw new CannotCancelOrderException();
         this._status = this.status.transitionTo(OrderStatus.Cancelled);
@@ -109,11 +116,11 @@ export class Order extends AggregateRoot<OrderId> {
     }
 
     public isStatusOpen(): boolean {
-        return this._status.equals(OrderStatus.Open);
+        return this._status.isOpen();
     }
 
     public isStatusPaid(): boolean {
-        return this._status.equals(OrderStatus.Paid);
+        return this._status.isPaid();
     }
 
     public isTermsAccepted(): boolean {

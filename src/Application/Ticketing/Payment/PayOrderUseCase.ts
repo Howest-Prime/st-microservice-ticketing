@@ -42,9 +42,11 @@ export class PayOrderUseCase implements UseCase<PayOrderInput, PayOrderOutput> {
         const results = await this._uow.do<PayOrderOutput>(async () => {
             
             const orderId = OrderId.create(input.orderId);
-            (await this._uow.getRepository<OrderRepository>('Order')
+            const order = (await this._uow.getRepository<OrderRepository>('Order')
                             .byId(orderId))
                             .orElseThrow(() => new OrderNotFoundException(orderId.value));
+            
+            order.ensureIsOpenForPayment();
             
             const payment = this.createPayment(input);
 

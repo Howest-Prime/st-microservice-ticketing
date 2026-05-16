@@ -12,6 +12,7 @@ export { TermsNotAcceptedException } from './Exceptions/TermsNotAcceptedExceptio
 export { CannotPayOrderException } from './Exceptions/CannotPayOrderException.ts';
 export { CannotReleaseTicketsException } from './Exceptions/CannotReleaseTicketsException.ts';
 export { CannotAddCustomerInfoException } from './Exceptions/CannotAddCustomerInfoException.ts';
+export { OrderNotOpenForPaymentException } from './Exceptions/OrderNotOpenForPaymentException.ts';
 
 export { MovieInfo } from './ValueObjects/MovieInfo.ts';
 export { Seat, VisitorTypeLabel } from './ValueObjects/Seat.ts';

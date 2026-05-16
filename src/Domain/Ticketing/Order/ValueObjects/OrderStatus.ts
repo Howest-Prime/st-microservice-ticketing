@@ -49,6 +49,14 @@ export class OrderStatus extends ValueObject {
         return this._status;
     }
 
+    public isOpen(): boolean {
+        return this.equals(OrderStatus.Open);
+    }
+
+    public isPaid(): boolean {
+        return this.equals(OrderStatus.Paid);
+    }
+
     public static Open = OrderStatus.create(OrderStatusState.Open);
     public static Paid = OrderStatus.create(OrderStatusState.Paid);
     public static TicketReleased = OrderStatus.create(OrderStatusState.TicketReleased);

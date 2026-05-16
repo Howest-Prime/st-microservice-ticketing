@@ -25,12 +25,15 @@ import {
     CreateOrderFromBookingUseCase,
     GetOrderByBookingIdInput,
     GetOrderByBookingIdUseCase,
+    MarkOrderAsPaidInput,
+    MarkOrderAsPaidUseCase,
 } from '@/Application/Ticketing/Orders/mod.ts';
 import { MongoDbGetOrderByBookingIdQuery } from '@/Infrastructure/Persistence/MongoDb/Queries/Orders/mod.ts';
 import {
     PayOrderInput,
     PayOrderOutput,
     PayOrderUseCase,
+    WhenPaymentSucceededThenMarkOrderAsPaid,
 } from '@/Application/Ticketing/Payment/mod.ts';
 
 export class Application implements Module {
@@ -170,6 +173,25 @@ export class Application implements Module {
                 return useCase;
             },
         );
+
+        serviceCollection.addScoped(
+            MarkOrderAsPaidUseCase.name,
+            async (serviceProvider: ServiceProvider) => {
+                const unitOfWork = (await serviceProvider.getService<MongoDbUnitOfWork>(
+                    MongoDbUnitOfWork.name,
+                )).getOrThrow();
+
+                const logger = (await serviceProvider.getService<Logger>(ConsoleLogger.name))
+                    .getOrThrow();
+
+                const useCase: UseCase<MarkOrderAsPaidInput, void> = new MarkOrderAsPaidUseCase(
+                    unitOfWork,
+                    logger,
+                );
+
+                return useCase;
+            },
+        );
     }
 
     private addPolicies(serviceCollection: ServiceCollection): void {
@@ -181,6 +203,21 @@ export class Application implements Module {
                 )).getOrThrow();
 
                 return new WhenSuggestionCreatedConsoleLogSuggestion(logger);
+            },
+        );
+
+        serviceCollection.addScoped(
+            WhenPaymentSucceededThenMarkOrderAsPaid.name,
+            async (serviceProvider: ServiceProvider) => {
+                const markOrderAsPaidUseCase = (await serviceProvider.getService<
+                    UseCase<MarkOrderAsPaidInput, void>
+                >(MarkOrderAsPaidUseCase.name)).getOrThrow();
+
+                const logger = (await serviceProvider.getService<Logger>(
+                    ConsoleLogger.name,
+                )).getOrThrow();
+
+                return new WhenPaymentSucceededThenMarkOrderAsPaid(markOrderAsPaidUseCase, logger);
             },
         );
     }

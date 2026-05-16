@@ -14,6 +14,12 @@ export class ExpiryDate extends ValueObject {
         newExpiryDate.validate();
         return newExpiryDate;
     }
+
+    public static createFromDate(date: Date): ExpiryDate {
+        const month = date.getUTCMonth() + 1; // getUTCMonth returns 0-11
+        const year = date.getUTCFullYear();
+        return this.create(month, year);
+    }
     
     public validate(): void {
         if (this._month < 1 || this._month > 12) {
@@ -33,5 +39,11 @@ export class ExpiryDate extends ValueObject {
 
     public get expiryYear(): number {
         return this._year;
+    }
+
+    public expiryDateString(): string {
+        const monthString = this._month.toString().padStart(2, '0');
+        const yearString = this._year.toString().slice(-2);
+        return `${monthString}/${yearString}`;
     }
 }

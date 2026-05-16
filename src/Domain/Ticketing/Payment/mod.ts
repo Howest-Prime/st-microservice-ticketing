@@ -13,6 +13,10 @@ export { CVV } from './/ValueObjects/CVV.ts';
 export { PaymentAmount } from './/ValueObjects/PaymentAmount.ts';
 export { PaymentStatus } from './/ValueObjects/PaymentStatus.ts';
 
+export { PaymentDomainEvent } from './Events/PaymentDomainEvent.ts';
+export { PaymentSucceeeded } from './Events/PaymentSuccess.ts';
+export { PaymentFailed } from './Events/PaymentFailed.ts';
+
 
 export { Payment } from './Payment.ts';
 

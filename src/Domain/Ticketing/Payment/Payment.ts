@@ -1,5 +1,5 @@
 import { AggregateRoot } from '@/Domain/Shared/mod.ts';
-import { BookingId, CardNumber, CVV, ExpiryDate, ExternalId, OrderId, PaymentAmount, PaymentId, PaymentMethod, PaymentStatus } from '@/Domain/Ticketing/Payment/mod.ts';
+import { BookingId, CardNumber, CVV, ExpiryDate, ExternalId, OrderId, PaymentAmount, PaymentFailed, PaymentId, PaymentMethod, PaymentStatus, PaymentSucceeeded } from '@/Domain/Ticketing/Payment/mod.ts';
 
 export class Payment extends AggregateRoot<PaymentId> {
 
@@ -23,7 +23,6 @@ export class Payment extends AggregateRoot<PaymentId> {
         orderId: OrderId,
         bookingId: BookingId,
         amount: PaymentAmount,
-        status: PaymentStatus
     ) {
         super(id);
         this._externalId = externalId;
@@ -34,7 +33,6 @@ export class Payment extends AggregateRoot<PaymentId> {
         this._orderId = orderId;
         this._bookingId = bookingId;
         this._amount = amount;
-        this._status = status;
     }
     
     public static create(
@@ -46,7 +44,6 @@ export class Payment extends AggregateRoot<PaymentId> {
         orderId: OrderId,
         bookingId: BookingId,
         amount: PaymentAmount,
-        status: PaymentStatus
     ): Payment {
         const id = PaymentId.create();
         return new Payment(
@@ -59,8 +56,32 @@ export class Payment extends AggregateRoot<PaymentId> {
             orderId,
             bookingId,
             amount,
-            status
         );
+    }
+
+    public handlePayment(success: boolean, failureReason?: string): void {
+        if (success) {
+            this.markAsSucceeded();
+            this.raise(
+                PaymentSucceeeded.create(
+                    this.id.value,
+                    this.orderId.value,
+                    this.bookingId.value,
+                )
+            )
+        } else {
+            this.markAsFailed();
+            this.raise(
+                PaymentFailed.create(
+                    this.id.value,
+                    this.orderId.value,
+                    this.bookingId.value,
+                    failureReason || 'Unknown reason'
+                )
+            )
+        }
+
+
     }
     
     public markAsFailed(): void {

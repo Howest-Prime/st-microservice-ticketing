@@ -13,3 +13,7 @@ export {
 } from '@/Application/Ticketing/Orders/GetOrderByBookingIdUseCase.ts';
 
 export { OrderNotFoundException } from './Exceptions/OrderNotFoundException.ts';
+export {
+    MarkOrderAsPaidUseCase,
+    type MarkOrderAsPaidInput,
+} from './MarkOrderAsPaidUseCase.ts';

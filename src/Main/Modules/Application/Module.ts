@@ -7,21 +7,31 @@ import {
 import { domainEventPolicies } from '@/Application/mod.ts';
 import type { Logger, UseCase } from '@/Application/Ports/mod.ts';
 import type {
-GetOrderByBookingIdData,
+    GetOrderByBookingIdData,
     SuggestionListItemReadModel,
 } from '@/Application/Ports/Queries/mod.ts';
 import { DomainEventRegistry } from '@/Infrastructure/Events/Shared/mod.ts';
 import { PolicyDomainEventListener } from '@/Infrastructure/Events/mod.ts';
-import {
-    MongoDbListSuggestionsQuery,
-} from '@/Infrastructure/Persistence/MongoDb/Queries/mod.ts';
+import { MongoDbListSuggestionsQuery } from '@/Infrastructure/Persistence/MongoDb/Queries/mod.ts';
 import { MongoDbUnitOfWork } from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
 import { Config, ConsoleLogger } from '@/Infrastructure/Shared/mod.ts';
 import { Module } from '@/Main/Modules/Shared/mod.ts';
 import { OnlinePaymentService } from '@/Infrastructure/Payment/mod.ts';
 import { SaveMovieUseCase, SaveMovieUseCaseInput } from '@/Application/Ticketing/Movies/mod.ts';
-import { AddCustomerToOrderUseCase, AddCustomerToOrderUseCaseInput, CreateOrderFromBookingUseCase, CreateOrderFromBookingInput, GetOrderByBookingIdUseCase, GetOrderByBookingIdInput } from '@/Application/Ticketing/Orders/mod.ts';
+import {
+    AddCustomerToOrderUseCase,
+    AddCustomerToOrderUseCaseInput,
+    CreateOrderFromBookingInput,
+    CreateOrderFromBookingUseCase,
+    GetOrderByBookingIdInput,
+    GetOrderByBookingIdUseCase,
+} from '@/Application/Ticketing/Orders/mod.ts';
 import { MongoDbGetOrderByBookingIdQuery } from '@/Infrastructure/Persistence/MongoDb/Queries/Orders/mod.ts';
+import {
+    PayOrderInput,
+    PayOrderOutput,
+    PayOrderUseCase,
+} from '@/Application/Ticketing/Payment/mod.ts';
 
 export class Application implements Module {
     add(serviceCollection: ServiceCollection, _config: Config): void {
@@ -46,11 +56,10 @@ export class Application implements Module {
                 const logger = (await serviceProvider.getService<Logger>(ConsoleLogger.name))
                     .getOrThrow();
 
-                const useCase: UseCase<SaveMovieUseCaseInput, string> =
-                    new SaveMovieUseCase(
-                        unitOfWork,
-                        logger,
-                    );
+                const useCase: UseCase<SaveMovieUseCaseInput, string> = new SaveMovieUseCase(
+                    unitOfWork,
+                    logger,
+                );
 
                 return useCase;
             },
@@ -131,6 +140,30 @@ export class Application implements Module {
                     GetOrderByBookingIdData
                 > = new GetOrderByBookingIdUseCase(
                     query,
+                    logger,
+                );
+
+                return useCase;
+            },
+        );
+
+        serviceCollection.addScoped(
+            PayOrderUseCase.name,
+            async (serviceProvider: ServiceProvider) => {
+                const unitOfWork = (await serviceProvider.getService<MongoDbUnitOfWork>(
+                    MongoDbUnitOfWork.name,
+                )).getOrThrow();
+
+                const paymentService = (await serviceProvider.getService<OnlinePaymentService>(
+                    OnlinePaymentService.name,
+                )).getOrThrow();
+
+                const logger = (await serviceProvider.getService<Logger>(ConsoleLogger.name))
+                    .getOrThrow();
+
+                const useCase: UseCase<PayOrderInput, PayOrderOutput> = new PayOrderUseCase(
+                    unitOfWork,
+                    paymentService,
                     logger,
                 );
 

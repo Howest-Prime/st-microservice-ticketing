@@ -1,5 +1,6 @@
 import { Logger, UseCase } from '@/Application/Ports/mod.ts';
 import { GetOrderByBookingIdData, GetOrderByBookingIdQuery } from '@/Application/Ports/Queries/mod.ts';
+import { OrderNotFoundException } from '@/Application/Ticketing/Orders/mod.ts';
 
 export interface GetOrderByBookingIdInput {
     bookingId: string
@@ -16,6 +17,7 @@ export class GetOrderByBookingIdUseCase implements UseCase<GetOrderByBookingIdIn
 
     public async execute(input: GetOrderByBookingIdInput): Promise<GetOrderByBookingIdOutput> {
         this._logger.debug('Retrieving order with booking id',{ bookingId: input.bookingId })
-        return (await this._query.fetch(input.bookingId)).getOrThrow();
+        return (await this._query.fetch(input.bookingId))
+            .orElseThrow(() => new OrderNotFoundException(input.bookingId));
     }
 }

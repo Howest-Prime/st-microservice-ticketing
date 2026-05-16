@@ -26,3 +26,6 @@ export { Order } from './Order.ts';
 
 export { BookingId, OrderId } from './EntityIds.ts';
 export type { OrderRepository } from './OrderRepository.ts';
+
+export { OrderDomainEvent } from './Events/OrderDomainEvent.ts';
+export { OrderPaid } from './Events/OrderPaid.ts';

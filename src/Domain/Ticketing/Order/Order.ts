@@ -10,6 +10,7 @@ import {
     InvalidTicketCountException,
     OrderId,
     OrderMustHaveAtLeastOneTicketException,
+    OrderPaid,
     OrderStatus,
     TermsNotAcceptedException,
     Ticket,
@@ -56,6 +57,7 @@ export class Order extends AggregateRoot<OrderId> {
         if (!this.isStatusOpen()) throw new CannotPayOrderException();
         if (!this.isTermsAccepted()) throw new TermsNotAcceptedException();
         this._status = this._status.transitionTo(OrderStatus.Paid);
+        this.raise(OrderPaid.create(this.id.value, this._bookingId.value));
     }
 
     public releaseTickets(): void {

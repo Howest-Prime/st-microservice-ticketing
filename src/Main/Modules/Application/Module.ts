@@ -27,6 +27,9 @@ import {
     GetOrderByBookingIdUseCase,
     MarkOrderAsPaidInput,
     MarkOrderAsPaidUseCase,
+    ReleaseTicketInput,
+    ReleaseTicketUseCase,
+    WhenOrderPaidThenReleaseTickets,
 } from '@/Application/Ticketing/Orders/mod.ts';
 import { MongoDbGetOrderByBookingIdQuery } from '@/Infrastructure/Persistence/MongoDb/Queries/Orders/mod.ts';
 import {
@@ -192,6 +195,25 @@ export class Application implements Module {
                 return useCase;
             },
         );
+
+        serviceCollection.addScoped(
+            ReleaseTicketUseCase.name,
+            async (serviceProvider: ServiceProvider) => {
+                const unitOfWork = (await serviceProvider.getService<MongoDbUnitOfWork>(
+                    MongoDbUnitOfWork.name,
+                )).getOrThrow();
+
+                const logger = (await serviceProvider.getService<Logger>(ConsoleLogger.name))
+                    .getOrThrow();
+
+                const useCase: UseCase<ReleaseTicketInput, void> = new ReleaseTicketUseCase(
+                    unitOfWork,
+                    logger,
+                );
+
+                return useCase;
+            }
+        );
     }
 
     private addPolicies(serviceCollection: ServiceCollection): void {
@@ -218,6 +240,21 @@ export class Application implements Module {
                 )).getOrThrow();
 
                 return new WhenPaymentSucceededThenMarkOrderAsPaid(markOrderAsPaidUseCase, logger);
+            },
+        );
+
+        serviceCollection.addScoped(
+            WhenOrderPaidThenReleaseTickets.name,
+            async (serviceProvider: ServiceProvider) => {
+                const releaseTicketUseCase = (await serviceProvider.getService<
+                    UseCase<ReleaseTicketInput, void>
+                >(ReleaseTicketUseCase.name)).getOrThrow();
+
+                const logger = (await serviceProvider.getService<Logger>(
+                    ConsoleLogger.name,
+                )).getOrThrow();
+
+                return new WhenOrderPaidThenReleaseTickets(releaseTicketUseCase, logger);
             },
         );
     }

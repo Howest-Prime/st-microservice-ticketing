@@ -2,7 +2,7 @@ import { EventFQDN } from '@/Domain/Shared/mod.ts';
 import { OrderDomainEvent } from './OrderDomainEvent.ts';
 
 export class OrderPaid extends OrderDomainEvent {
-    public static readonly FQDN_VALUE: EventFQDN = EventFQDN.create(
+    public static readonly FQDN: EventFQDN = EventFQDN.create(
         `${OrderDomainEvent.FQDN_PREFIX}.OrderPaid`,
     );
 
@@ -21,7 +21,7 @@ export class OrderPaid extends OrderDomainEvent {
     }
 
     public override get FQDN(): EventFQDN {
-        return OrderPaid.FQDN_VALUE;
+        return OrderPaid.FQDN;
     }
 
     public override get occurredOn(): Date {

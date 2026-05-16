@@ -17,3 +17,11 @@ export {
     MarkOrderAsPaidUseCase,
     type MarkOrderAsPaidInput,
 } from './MarkOrderAsPaidUseCase.ts';
+
+
+export {
+    type ReleaseTicketInput,
+    ReleaseTicketUseCase,
+} from './ReleaseTicketUseCase.ts';
+
+export { WhenOrderPaidThenReleaseTickets } from './WhenOrderPaidThenReleaseTickets.ts';

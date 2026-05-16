@@ -2,6 +2,8 @@ import { WhenSuggestionCreatedConsoleLogSuggestion } from '@/Application/Ticketi
 import { WhenPaymentSucceededThenMarkOrderAsPaid } from '@/Application/Ticketing/Payment/mod.ts';
 import { SuggestionCreatedDomainEvent } from '@/Domain/Ticketing/Suggestions/mod.ts';
 import { PaymentSucceeeded } from '@/Domain/Ticketing/Payment/mod.ts';
+import { OrderPaid } from '@/Domain/Ticketing/Order/mod.ts';
+import { WhenOrderPaidThenReleaseTickets } from '@/Application/Ticketing/Orders/mod.ts';
 
 export const domainEventPolicies: Map<string, string[]> = new Map([
     [
@@ -12,4 +14,8 @@ export const domainEventPolicies: Map<string, string[]> = new Map([
         PaymentSucceeeded.FQDN.toString(),
         [WhenPaymentSucceededThenMarkOrderAsPaid.name],
     ],
+    [
+        OrderPaid.FQDN.toString(), 
+        [WhenOrderPaidThenReleaseTickets.name]
+    ]
 ]);

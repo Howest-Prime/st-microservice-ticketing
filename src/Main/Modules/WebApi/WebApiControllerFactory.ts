@@ -23,8 +23,23 @@ import {
     type WebApiController,
 } from '@/Infrastructure/WebApi/Shared/mod.ts';
 import { IllegalStateException } from '@domaincrafters/std';
-import { AddCustomerInformationToOrderController, GetOrderByBookingIdController } from '@/Infrastructure/WebApi/Controllers/Orders/mod.ts';
-import { AddCustomerToOrderUseCase, AddCustomerToOrderUseCaseInput, GetOrderByBookingIdInput, GetOrderByBookingIdOutput, GetOrderByBookingIdUseCase } from '@/Application/Ticketing/Orders/mod.ts';
+import {
+    AddCustomerInformationToOrderController,
+    GetOrderByBookingIdController,
+} from '@/Infrastructure/WebApi/Controllers/Orders/mod.ts';
+import {
+    AddCustomerToOrderUseCase,
+    AddCustomerToOrderUseCaseInput,
+    GetOrderByBookingIdInput,
+    GetOrderByBookingIdOutput,
+    GetOrderByBookingIdUseCase,
+} from '@/Application/Ticketing/Orders/mod.ts';
+import {
+    PayOrderInput,
+    PayOrderOutput,
+    PayOrderUseCase,
+} from '@/Application/Ticketing/Payment/mod.ts';
+import { PayAnOrderController } from '@/Infrastructure/WebApi/Controllers/Payments/mod.ts';
 
 export class WebApiControllerFactory implements ControllerFactory {
     private readonly _serviceProvider: ServiceProvider;
@@ -49,6 +64,8 @@ export class WebApiControllerFactory implements ControllerFactory {
                 return await this.createAddCustomerInformationToOrderController();
             case GetOrderByBookingIdController.name:
                 return await this.createGetOrderByBookingIdController();
+            case PayAnOrderController.name:
+                return await this.createPayAnOrderController();
 
             default:
                 throw new IllegalStateException(
@@ -56,7 +73,9 @@ export class WebApiControllerFactory implements ControllerFactory {
                 );
         }
     }
-    private async createAddCustomerInformationToOrderController(): Promise<AddCustomerInformationToOrderController> {
+    private async createAddCustomerInformationToOrderController(): Promise<
+        AddCustomerInformationToOrderController
+    > {
         const useCase = (await this._serviceProvider.getService<
             UseCase<AddCustomerToOrderUseCaseInput, void>
         >(AddCustomerToOrderUseCase.name)).getOrThrow();
@@ -94,5 +113,13 @@ export class WebApiControllerFactory implements ControllerFactory {
         >(GetOrderByBookingIdUseCase.name)).getOrThrow();
 
         return new GetOrderByBookingIdController(useCase);
+    }
+
+    private async createPayAnOrderController(): Promise<PayAnOrderController> {
+        const useCase = (await this._serviceProvider.getService<
+            UseCase<PayOrderInput, PayOrderOutput>
+        >(PayOrderUseCase.name)).getOrThrow();
+
+        return new PayAnOrderController(useCase);
     }
 }

@@ -1,0 +1,22 @@
+import {
+    MongoDbClient,
+    MongoDbRepository,
+} from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
+import { Payment, PaymentId, PaymentRepository } from '@/Domain/Ticketing/Payment/mod.ts';
+import { PaymentDocumentMapper } from '@/Infrastructure/Persistence/MongoDb/Repositories/mod.ts';
+
+export class MongoDbPaymentRepository extends MongoDbRepository<Payment, PaymentId>
+    implements PaymentRepository {
+    static override readonly collectionName: string = 'payments';
+
+    constructor(
+        client: MongoDbClient,
+        mapper: PaymentDocumentMapper,
+    ) {
+        super(client, mapper, MongoDbPaymentRepository.collectionName);
+    }
+
+    override get entityName(): string {
+        return Payment.name;
+    }
+}

@@ -3,7 +3,7 @@ import { ValueObject } from '@/Domain/Shared/mod.ts';
 
 export class CVV extends ValueObject {
     private constructor(
-        public readonly _value: string
+        public readonly _value: string,
     ) {
         super();
     }
@@ -21,8 +21,8 @@ export class CVV extends ValueObject {
     }
 
     public equals(other: CVV): boolean {
-        return other instanceof CVV
-                && this._value === other._value;
+        return other instanceof CVV &&
+            this._value === other._value;
     }
 
     public get cvv(): string {

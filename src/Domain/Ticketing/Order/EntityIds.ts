@@ -1,7 +1,7 @@
 import { UUIDEntityId } from '@/Domain/Shared/mod.ts';
 
 export class OrderId extends UUIDEntityId {
-    private constructor(id?: string){
+    private constructor(id?: string) {
         super(id);
     }
 
@@ -11,7 +11,7 @@ export class OrderId extends UUIDEntityId {
 }
 
 export class BookingId extends UUIDEntityId {
-    private constructor(id?: string){
+    private constructor(id?: string) {
         super(id);
     }
 

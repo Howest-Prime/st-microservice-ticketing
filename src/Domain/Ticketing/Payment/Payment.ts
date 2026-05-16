@@ -1,15 +1,27 @@
 import { AggregateRoot } from '@/Domain/Shared/mod.ts';
-import { BookingId, CardNumber, CVV, ExpiryDate, ExternalId, OrderId, PaymentAmount, PaymentFailed, PaymentId, PaymentMethod, PaymentStatus, PaymentSucceeeded } from '@/Domain/Ticketing/Payment/mod.ts';
+import {
+    BookingId,
+    CardNumber,
+    CVV,
+    ExpiryDate,
+    ExternalId,
+    OrderId,
+    PaymentAmount,
+    PaymentFailed,
+    PaymentId,
+    PaymentMethod,
+    PaymentStatus,
+    PaymentSucceeeded,
+} from '@/Domain/Ticketing/Payment/mod.ts';
 
 export class Payment extends AggregateRoot<PaymentId> {
-
     private readonly _externalId: ExternalId;
     private readonly _paymentMethod: PaymentMethod;
     private readonly _cardNumber: CardNumber;
     private readonly _expiryDate: ExpiryDate;
     private readonly _cvv: CVV;
     private readonly _orderId: OrderId;
-    private readonly _bookingId: BookingId
+    private readonly _bookingId: BookingId;
     private readonly _amount: PaymentAmount;
     private _status: PaymentStatus = PaymentStatus.Pending;
 
@@ -34,7 +46,7 @@ export class Payment extends AggregateRoot<PaymentId> {
         this._bookingId = bookingId;
         this._amount = amount;
     }
-    
+
     public static create(
         externalId: ExternalId,
         paymentMethod: PaymentMethod,
@@ -67,8 +79,8 @@ export class Payment extends AggregateRoot<PaymentId> {
                     this.id.value,
                     this.orderId.value,
                     this.bookingId.value,
-                )
-            )
+                ),
+            );
         } else {
             this.markAsFailed();
             this.raise(
@@ -76,14 +88,12 @@ export class Payment extends AggregateRoot<PaymentId> {
                     this.id.value,
                     this.orderId.value,
                     this.bookingId.value,
-                    failureReason || 'Unknown reason'
-                )
-            )
+                    failureReason || 'Unknown reason',
+                ),
+            );
         }
-
-
     }
-    
+
     public markAsFailed(): void {
         this._status = this._status.transitionTo(PaymentStatus.Failed);
     }
@@ -95,7 +105,7 @@ export class Payment extends AggregateRoot<PaymentId> {
     public get externalId(): ExternalId {
         return this._externalId;
     }
-    
+
     public get paymentMethod(): PaymentMethod {
         return this._paymentMethod;
     }
@@ -103,7 +113,7 @@ export class Payment extends AggregateRoot<PaymentId> {
     public get cardNumber(): CardNumber {
         return this._cardNumber;
     }
-    
+
     public get expiryDate(): ExpiryDate {
         return this._expiryDate;
     }
@@ -111,7 +121,7 @@ export class Payment extends AggregateRoot<PaymentId> {
     public get cvv(): CVV {
         return this._cvv;
     }
-    
+
     public get orderId(): OrderId {
         return this._orderId;
     }
@@ -119,11 +129,11 @@ export class Payment extends AggregateRoot<PaymentId> {
     public get bookingId(): BookingId {
         return this._bookingId;
     }
-    
+
     public get amount(): PaymentAmount {
         return this._amount;
     }
-    
+
     public get status(): PaymentStatus {
         return this._status;
     }

@@ -9,7 +9,6 @@ export enum OrderStatusState {
 }
 
 export class OrderStatus extends ValueObject {
-
     private readonly _status: OrderStatusState;
 
     private constructor(value: OrderStatusState) {
@@ -21,16 +20,16 @@ export class OrderStatus extends ValueObject {
         return new OrderStatus(value);
     }
 
-    public transitionTo(targetStatus: OrderStatus ):OrderStatus {
-        if(this.equals(targetStatus)){
+    public transitionTo(targetStatus: OrderStatus): OrderStatus {
+        if (this.equals(targetStatus)) {
             throw new InvalidOrderStatusTransition('The order is already in this status');
-        }else if (!this.canTransitionTo(targetStatus)) {
+        } else if (!this.canTransitionTo(targetStatus)) {
             throw new InvalidOrderStatusTransition('Invalid order transition');
-        }else {
+        } else {
             return targetStatus;
         }
     }
-    
+
     private canTransitionTo(newStatus: OrderStatus): boolean {
         const validTransitions: Record<OrderStatusState, OrderStatusState[]> = {
             [OrderStatusState.Open]: [OrderStatusState.Paid],

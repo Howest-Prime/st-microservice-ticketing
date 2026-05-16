@@ -8,6 +8,6 @@ export {
 } from './GetSuggestionByIdQueryPort.ts';
 
 export {
+    type GetOrderByBookingIdData,
     type GetOrderByBookingIdQuery,
-    type GetOrderByBookingIdData
-} from './GetOrderByBookingIdQueryPort.ts'
+} from './GetOrderByBookingIdQueryPort.ts';

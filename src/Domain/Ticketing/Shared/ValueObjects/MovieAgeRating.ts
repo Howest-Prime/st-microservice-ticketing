@@ -11,7 +11,6 @@ export enum MovieAgeRatingValue {
 }
 
 export class MovieAgeRating extends ValueObject {
-
     private readonly _value: MovieAgeRatingValue;
 
     private constructor(ageRating: MovieAgeRatingValue) {
@@ -24,7 +23,7 @@ export class MovieAgeRating extends ValueObject {
     }
 
     public override equals(other: MovieAgeRating): boolean {
-        if(!other) {
+        if (!other) {
             return false;
         }
         return this._value === other._value;
@@ -33,8 +32,4 @@ export class MovieAgeRating extends ValueObject {
     public get Value(): number {
         return this._value;
     }
-
-
-
-    
 }

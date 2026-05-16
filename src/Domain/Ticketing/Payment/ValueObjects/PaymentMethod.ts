@@ -20,21 +20,20 @@ export class PaymentMethod extends ValueObject {
     public static fromString(value: string): PaymentMethod {
         const normalized = value.trim().toLowerCase();
         const type = Object.values(PaymentMethodType)
-            .find(v => v.toLowerCase() === normalized);
+            .find((v) => v.toLowerCase() === normalized);
 
         if (!type) throw new InvalidPaymentMethodException(value);
 
         return new PaymentMethod(type);
     }
-    
 
     public get paymentMethodType(): PaymentMethodType {
         return this._type;
     }
 
     public equals(other: PaymentMethod): boolean {
-        return other instanceof PaymentMethod
-                && this._type === other._type;
+        return other instanceof PaymentMethod &&
+            this._type === other._type;
     }
 
     public static readonly CreditCard = PaymentMethod.create(PaymentMethodType.CreditCard);

@@ -1,9 +1,7 @@
 import { ValueObject } from '@/Domain/Shared/mod.ts';
 import { InvalidPosterUrl } from '@/Domain/Ticketing/Shared/mod.ts';
 
-
 export class MoviePosterUrl extends ValueObject {
-
     private readonly _value: string;
 
     private constructor(url: string) {
@@ -18,7 +16,7 @@ export class MoviePosterUrl extends ValueObject {
     }
 
     protected validate(): void {
-        if(!this._value || !this.isValidUrl()){
+        if (!this._value || !this.isValidUrl()) {
             throw new InvalidPosterUrl(this._value);
         }
     }
@@ -28,8 +26,8 @@ export class MoviePosterUrl extends ValueObject {
     }
 
     public override equals(other: ValueObject): boolean {
-        return other instanceof MoviePosterUrl 
-            && this._value === other._value;
+        return other instanceof MoviePosterUrl &&
+            this._value === other._value;
     }
 
     public get value(): string {

@@ -1,16 +1,13 @@
 import { ValueObject } from '@/Domain/Shared/mod.ts';
 import { InvalidMovieDuration } from '@/Domain/Ticketing/Shared/mod.ts';
 
-
-
-export class MovieDuration extends ValueObject{
-    
+export class MovieDuration extends ValueObject {
     private static readonly _MINIMUM_MINUTES: number = 1;
     private static readonly _INTERMISSION_DURATION = 10;
 
     private readonly _value: number;
 
-    private constructor(duration: number){
+    private constructor(duration: number) {
         super();
         this._value = duration;
     }
@@ -22,14 +19,14 @@ export class MovieDuration extends ValueObject{
     }
 
     protected validate(): void {
-        if(!this._value || this._value < MovieDuration._MINIMUM_MINUTES){
-            throw new InvalidMovieDuration(this._value, MovieDuration._MINIMUM_MINUTES)
+        if (!this._value || this._value < MovieDuration._MINIMUM_MINUTES) {
+            throw new InvalidMovieDuration(this._value, MovieDuration._MINIMUM_MINUTES);
         }
     }
 
     public override equals(other: ValueObject): boolean {
-        return other instanceof MovieDuration 
-            && this._value === other._value;
+        return other instanceof MovieDuration &&
+            this._value === other._value;
     }
 
     public hasIntermission(): boolean {

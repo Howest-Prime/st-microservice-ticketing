@@ -1,13 +1,13 @@
 import type { Document } from '@mongodb';
 
 import {
-    MovieTitle,
+    MovieAgeRating,
+    MovieAgeRatingValue,
     MovieDuration,
     MovieGenre,
-    MovieAgeRating,
-    MoviePosterUrl,
-    MovieAgeRatingValue,
     MovieId,
+    MoviePosterUrl,
+    MovieTitle,
 } from '@/Domain/Ticketing/Shared/mod.ts';
 import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
 import {

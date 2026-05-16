@@ -1,15 +1,18 @@
-import { InvalidPaymentStatusException, InvalidPaymentTransitionException } from '@/Domain/Ticketing/Payment/mod.ts';
+import {
+    InvalidPaymentStatusException,
+    InvalidPaymentTransitionException,
+} from '@/Domain/Ticketing/Payment/mod.ts';
 import { ValueObject } from '@/Domain/Shared/mod.ts';
 
 export enum PaymentStatusState {
     Pending = 'Pending',
     Success = 'Success',
     Failed = 'Failed',
-} 
+}
 
 export class PaymentStatus extends ValueObject {
     private constructor(
-        public readonly _value: PaymentStatusState
+        public readonly _value: PaymentStatusState,
     ) {
         super();
     }
@@ -23,7 +26,7 @@ export class PaymentStatus extends ValueObject {
     public static createFromString(value: string): PaymentStatus {
         const normalized = value.toLowerCase();
         const state = Object.values(PaymentStatusState)
-                .find(v => v.toLowerCase() === normalized);
+            .find((v) => v.toLowerCase() === normalized);
 
         if (!state) throw new InvalidPaymentStatusException(value);
 
@@ -33,13 +36,12 @@ export class PaymentStatus extends ValueObject {
     public validate(): void {
         if (!Object.values(PaymentStatusState).includes(this._value)) {
             throw new InvalidPaymentStatusException(this._value);
-        }      
-        
+        }
     }
 
     public equals(other: PaymentStatus): boolean {
-        return other instanceof PaymentStatus
-                && this._value === other._value;  
+        return other instanceof PaymentStatus &&
+            this._value === other._value;
     }
 
     public transitionTo(target: PaymentStatus): PaymentStatus {
@@ -49,7 +51,7 @@ export class PaymentStatus extends ValueObject {
         return target;
     }
 
-    private  canTransitionTo(target: PaymentStatus): boolean {
+    private canTransitionTo(target: PaymentStatus): boolean {
         const validTransitions: Record<PaymentStatusState, PaymentStatusState[]> = {
             [PaymentStatusState.Pending]: [PaymentStatusState.Success, PaymentStatusState.Failed],
             [PaymentStatusState.Success]: [],
@@ -59,8 +61,15 @@ export class PaymentStatus extends ValueObject {
         return validTransitions[this._value].includes(target._value);
     }
 
-    public static readonly Pending = PaymentStatus.create(PaymentStatusState.Pending);
-    public static readonly Success = PaymentStatus.create(PaymentStatusState.Success)
-    public static readonly Failed = PaymentStatus.create(PaymentStatusState.Failed);
+    public get value(): PaymentStatusState {
+        return this._value;
+    }
 
+    public override toString(): string {
+        return this._value;
+    }
+
+    public static readonly Pending = PaymentStatus.create(PaymentStatusState.Pending);
+    public static readonly Success = PaymentStatus.create(PaymentStatusState.Success);
+    public static readonly Failed = PaymentStatus.create(PaymentStatusState.Failed);
 }

@@ -3,7 +3,6 @@ import { UseCase } from '@/Application/Ports/mod.ts';
 import { AddCustomerToOrderUseCaseInput } from '@/Application/Ticketing/Orders/mod.ts';
 import { RouterContext } from '@oak/oak';
 
-
 export class AddCustomerInformationToOrderController implements WebApiController {
     private readonly _useCase: UseCase<AddCustomerToOrderUseCaseInput, void>;
 
@@ -12,12 +11,11 @@ export class AddCustomerInformationToOrderController implements WebApiController
     }
 
     public async handle(ctx: RouterContext<string>): Promise<void> {
-
         const orderId = ctx.params.orderId;
 
         if (!orderId) {
             ctx.response.status = 400;
-            ctx.response.body = { error: "Order Id is required" };
+            ctx.response.body = { error: 'Order Id is required' };
             return;
         }
 
@@ -30,7 +28,10 @@ export class AddCustomerInformationToOrderController implements WebApiController
         ctx.response.headers.set('Location', `/api/orders/${orderId}`);
     }
 
-    private retrieveUseCaseInputFromBody(orderId: string, body: Record<string, unknown>): AddCustomerToOrderUseCaseInput {
+    private retrieveUseCaseInputFromBody(
+        orderId: string,
+        body: Record<string, unknown>,
+    ): AddCustomerToOrderUseCaseInput {
         return {
             orderId,
             salutation: body.salutation as string,

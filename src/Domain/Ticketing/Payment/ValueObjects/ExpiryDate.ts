@@ -20,17 +20,17 @@ export class ExpiryDate extends ValueObject {
         const year = date.getUTCFullYear();
         return this.create(month, year);
     }
-    
+
     public validate(): void {
-        if (this._month < 1 || this._month > 12) {
+        if (isNaN(this._month) || isNaN(this._year) || this._month < 1 || this._month > 12) {
             throw new InvalidExpiryDateException(this._month, this._year);
-        }   
+        }
     }
 
     public equals(other: ExpiryDate): boolean {
-        return other instanceof ExpiryDate
-                && this._month === other._month
-                && this._year === other._year;
+        return other instanceof ExpiryDate &&
+            this._month === other._month &&
+            this._year === other._year;
     }
 
     public get expiryMonth(): number {

@@ -1,8 +1,8 @@
 import { UUIDEntityId } from '@/Domain/Shared/mod.ts';
 
-export class PaymentId extends UUIDEntityId  {
+export class PaymentId extends UUIDEntityId {
     private constructor(
-        value?: string
+        value?: string,
     ) {
         super(value);
     }
@@ -12,9 +12,9 @@ export class PaymentId extends UUIDEntityId  {
     }
 }
 
-export class ExternalId extends UUIDEntityId  {
+export class ExternalId extends UUIDEntityId {
     private constructor(
-        value?: string
+        value?: string,
     ) {
         super(value);
     }
@@ -24,9 +24,9 @@ export class ExternalId extends UUIDEntityId  {
     }
 }
 
-export class OrderId extends UUIDEntityId  {
+export class OrderId extends UUIDEntityId {
     private constructor(
-        value?: string
+        value?: string,
     ) {
         super(value);
     }
@@ -36,9 +36,9 @@ export class OrderId extends UUIDEntityId  {
     }
 }
 
-export class BookingId extends UUIDEntityId  {
+export class BookingId extends UUIDEntityId {
     private constructor(
-        value?: string
+        value?: string,
     ) {
         super(value);
     }
@@ -47,4 +47,3 @@ export class BookingId extends UUIDEntityId  {
         return new BookingId(value);
     }
 }
-

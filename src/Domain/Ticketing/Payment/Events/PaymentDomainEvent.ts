@@ -4,5 +4,5 @@ export abstract class PaymentDomainEvent implements DomainEvent {
     public static readonly FQDN_PREFIX = 'howestprime.ticketing.payment';
 
     abstract get FQDN(): EventFQDN;
-    abstract get occurredOn(): Date;   
+    abstract get occurredOn(): Date;
 }

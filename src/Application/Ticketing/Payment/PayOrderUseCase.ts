@@ -1,9 +1,19 @@
 import { Logger, UnitOfWork, UseCase } from '@/Application/Ports/mod.ts';
 import { PaymentRequest, PaymentService } from '@/Application/Ports/Gateways/mod.ts';
-import { BookingId, CardNumber, CVV, ExpiryDate, ExternalId, OrderId, Payment, PaymentAmount, PaymentMethod } from '@/Domain/Ticketing/Payment/mod.ts';
+import {
+    BookingId,
+    CardNumber,
+    CVV,
+    ExpiryDate,
+    ExternalId,
+    OrderId,
+    Payment,
+    PaymentAmount,
+    PaymentMethod,
+} from '@/Domain/Ticketing/Payment/mod.ts';
 
-export interface PayOrderUseCaseInput {
-    externalId: string
+export interface PayOrderInput {
+    externalId: string;
     orderId: string;
     paymentMethod: string;
     cardNumber: string;
@@ -13,48 +23,61 @@ export interface PayOrderUseCaseInput {
     amount: number;
 }
 
+export interface PayOrderOutput {
+    paymentId: string;
+}
 
-export class PayOrderUseCase implements UseCase<PayOrderUseCaseInput, void> {
-
+export class PayOrderUseCase implements UseCase<PayOrderInput, PayOrderOutput> {
     public constructor(
         private readonly _uow: UnitOfWork,
         private readonly _paymentService: PaymentService,
         private readonly _logger: Logger
     ) {}
 
-    public async execute(input: PayOrderUseCaseInput): Promise<void> {
-        this._logger.debug(`Processing payment for order ${input.orderId} with amount ${input.amount}`);
+    public async execute(input: PayOrderInput): Promise<PayOrderOutput> {
+        this._logger.debug('Processing payment', { orderId: input.orderId, amount: input.amount });
 
-        await this._uow.do<void>( async() => {
+        const results = await this._uow.do<PayOrderOutput>(async () => {
+            const payment = this.createPayment(input);
 
-            const newPayment =  Payment.create(
-                ExternalId.create(input.externalId),
-                PaymentMethod.fromString(input.paymentMethod),
-                CardNumber.create(input.cardNumber),
-                ExpiryDate.createFromDate(input.expirationDate),
-                CVV.create(input.cvv),
-                OrderId.create(input.orderId),
-                BookingId.create(input.bookingId),
-                PaymentAmount.create(input.amount),
-            );
+            const paymentRequest = this.createPaymentRequest(payment);
 
-            const paymentRequest: PaymentRequest = {
-                amount: newPayment.amount.amount,
-                cardNumber: newPayment.cardNumber.cardNumber,
-                expiryDate:  newPayment.expiryDate.toString(),
-                cvv: newPayment.cvv.cvv,
-                paymentMethod: newPayment.paymentMethod.paymentMethodType
-            };
-
-            this._logger.debug(`Sending payment request for order ${input.orderId} with amount ${input.amount}`);
+            this._logger.debug('Sending payment request', { orderId: payment.orderId, amount: payment.amount.amount });
             const paymentResponse = await this._paymentService.pay(paymentRequest);
 
-            newPayment.handlePayment(paymentResponse.success, paymentResponse.failureReason)
+            payment.handlePayment(paymentResponse.success, paymentResponse.failureReason);
 
-            this._uow.save(newPayment);
-            this._logger.info(`Payment for order ${input.orderId} processed with status ${newPayment.status}`);
+            await this._uow.save(payment);
+            this._logger.info('Payment processed', { orderId: payment.orderId, status: payment.status });
+
+            return {
+                paymentId: payment.id.toString(),
+            };
         });
 
-
+        return results;
     }
-}   
+
+    private createPaymentRequest(payment: Payment): PaymentRequest {
+        return {
+            amount: payment.amount.amount,
+            cardNumber: payment.cardNumber.cardNumber,
+            expiryDate: payment.expiryDate.toString(),
+            cvv: payment.cvv.cvv,
+            paymentMethod: payment.paymentMethod.paymentMethodType,
+        };
+    }
+
+    private createPayment(input: PayOrderInput): Payment {
+        return Payment.create(
+            ExternalId.create(input.externalId),
+            PaymentMethod.fromString(input.paymentMethod),
+            CardNumber.create(input.cardNumber),
+            ExpiryDate.createFromDate(input.expirationDate),
+            CVV.create(input.cvv),
+            OrderId.create(input.orderId),
+            BookingId.create(input.bookingId),
+            PaymentAmount.create(input.amount),
+        );
+    }
+}

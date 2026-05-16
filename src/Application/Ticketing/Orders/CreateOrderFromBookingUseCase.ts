@@ -3,28 +3,25 @@ import { MovieInfo, Order, Seat, Ticket, VisitorTypeLabel } from '@/Domain/Ticke
 import { MovieRepository } from '@/Domain/Ticketing/Movies/mod.ts';
 import { MovieNotFoundException } from '@/Application/Ticketing/Orders/Exceptions/MovieNotFoundException.ts';
 
-
 export interface CreateOrderFromBookingInput {
-    bookingId: string,
-    movieId: string,
-    room: string,
-    showtime: Date,
-    amountOfStandardVisitors: number,
-    amountOfDiscountedVisitors: number,
-    seats: number[]
+    bookingId: string;
+    movieId: string;
+    room: string;
+    showtime: Date;
+    amountOfStandardVisitors: number;
+    amountOfDiscountedVisitors: number;
+    seats: number[];
 }
 
-export class CreateOrderFromBookingUseCase implements UseCase<CreateOrderFromBookingInput, string>{
-
+export class CreateOrderFromBookingUseCase implements UseCase<CreateOrderFromBookingInput, string> {
     public constructor(
         private readonly _unitOfWork: UnitOfWork,
         private readonly _logger: Logger
     ) {}
 
     async execute(input: CreateOrderFromBookingInput): Promise<string> {
-
         const result = await this._unitOfWork.do<string>(async () => {
-            this._logger.debug(`Creating order from booking`, {input});
+            this._logger.debug(`Creating order from booking`, { input });
 
             const movie = (await this._unitOfWork.getRepository<MovieRepository>('Movie')
                                 .byExternalId(input.movieId))
@@ -39,17 +36,7 @@ export class CreateOrderFromBookingUseCase implements UseCase<CreateOrderFromBoo
                 movie.posterUrl
             );
 
-            const standardSeats = input.seats.slice(0, input.amountOfStandardVisitors);
-            const discountedSeats = input.seats.slice(input.amountOfStandardVisitors);
-
-            const tickets: Ticket[] = [
-                ...standardSeats.map(seatNr =>
-                    Ticket.create(movieInfo, Seat.create(seatNr, VisitorTypeLabel.Standard), input.room, input.showtime)
-                ),
-                ...discountedSeats.map(seatNr =>
-                    Ticket.create(movieInfo, Seat.create(seatNr, VisitorTypeLabel.Discounted), input.room, input.showtime)
-                ),
-            ];
+            const tickets = this.createTickets(input, movieInfo);
 
             const newOrder = Order.create(input.bookingId, tickets);
 
@@ -63,5 +50,27 @@ export class CreateOrderFromBookingUseCase implements UseCase<CreateOrderFromBoo
         return result;
     }
 
+    private createTickets(input: CreateOrderFromBookingInput, movieInfo: MovieInfo): Ticket[] {
+        const standardSeats = input.seats.slice(0, input.amountOfStandardVisitors);
+        const discountedSeats = input.seats.slice(input.amountOfStandardVisitors);
 
+        return [
+            ...standardSeats.map((seatNr) =>
+                Ticket.create(
+                    movieInfo,
+                    Seat.create(seatNr, VisitorTypeLabel.Standard),
+                    input.room,
+                    input.showtime,
+                )
+            ),
+            ...discountedSeats.map((seatNr) =>
+                Ticket.create(
+                    movieInfo,
+                    Seat.create(seatNr, VisitorTypeLabel.Discounted),
+                    input.room,
+                    input.showtime,
+                )
+            ),
+        ];
+    }
 }

@@ -1,4 +1,7 @@
-import { GetOrderByBookingIdData, GetOrderByBookingIdQuery } from '@/Application/Ports/Queries/mod.ts';
+import {
+    GetOrderByBookingIdData,
+    GetOrderByBookingIdQuery,
+} from '@/Application/Ports/Queries/mod.ts';
 import { MongoDbClient } from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
 import { Optional, UUID } from '@domaincrafters/std';
 import { Document } from '@mongodb';
@@ -8,7 +11,7 @@ export class MongoDbGetOrderByBookingIdQuery implements GetOrderByBookingIdQuery
     private static readonly _collectionName = 'orders';
 
     public constructor(
-        private readonly _client: MongoDbClient
+        private readonly _client: MongoDbClient,
     ) {}
 
     public async fetch(bookingId: string): Promise<Optional<GetOrderByBookingIdData>> {
@@ -38,9 +41,7 @@ export class MongoDbGetOrderByBookingIdQuery implements GetOrderByBookingIdQuery
             bookingId: this.parseUUID(doc.bookingId as string),
             status: doc.status as string,
             price: totalPrice,
-            customer: doc.customer
-                ? this.mapCustomer(doc.customer as Document)
-                : null,
+            customer: doc.customer ? this.mapCustomer(doc.customer as Document) : null,
             tickets: tickets.map((t) => this.mapTicket(t)),
         };
     }

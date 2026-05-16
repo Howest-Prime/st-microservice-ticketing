@@ -2,10 +2,11 @@ import { PaymentDomainEvent } from '@/Domain/Ticketing/Payment/mod.ts';
 import { EventFQDN } from '../../../Shared/mod.ts';
 
 export class PaymentFailed extends PaymentDomainEvent {
+    public static readonly FQDN: EventFQDN = EventFQDN.create(
+        `${PaymentDomainEvent.FQDN_PREFIX}.PaymentFailed`
+    );
 
-    public static readonly FQDN: EventFQDN = EventFQDN.create(`${PaymentDomainEvent.FQDN_PREFIX}.PaymentFailed`);
-
-    private readonly _occurredOn: Date
+    private readonly _occurredOn: Date;
 
     private constructor(
         private readonly _paymentId: string,
@@ -23,7 +24,7 @@ export class PaymentFailed extends PaymentDomainEvent {
         bookingId: string,
         reason: string,
     ): PaymentFailed {
-        return new PaymentFailed(paymentId,orderId, bookingId, reason);
+        return new PaymentFailed(paymentId, orderId, bookingId, reason);
     }
 
     public override get FQDN(): EventFQDN {
@@ -36,7 +37,7 @@ export class PaymentFailed extends PaymentDomainEvent {
     public get paymentId(): string {
         return this._paymentId;
     }
-    
+
     public get bookingId(): string {
         return this._bookingId;
     }
@@ -48,5 +49,4 @@ export class PaymentFailed extends PaymentDomainEvent {
     public get reason(): string {
         return this._reason;
     }
-
 }

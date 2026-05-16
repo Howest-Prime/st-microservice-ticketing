@@ -1,27 +1,25 @@
 import { ValueObject } from '@/Domain/Shared/mod.ts';
-import { 
-    InvalidGenresException, 
-    Money, 
-    MovieAgeRating, 
-    MovieDuration, 
-    MovieGenre, 
-    MovieId, 
-    MoviePosterUrl, 
-    MovieTitle 
+import {
+    InvalidGenresException,
+    Money,
+    MovieAgeRating,
+    MovieDuration,
+    MovieGenre,
+    MovieId,
+    MoviePosterUrl,
+    MovieTitle,
 } from '@/Domain/Ticketing/Shared/mod.ts';
 
-
 export class MovieInfo extends ValueObject {
+    private static readonly PRICE_PER_MIN: number = 0.15;
 
-    private static readonly PRICE_PER_MIN: number = 0.15
-
-    private readonly _id: MovieId
+    private readonly _id: MovieId;
     private readonly _title: MovieTitle;
     private readonly _duration: MovieDuration;
     private readonly _genres: MovieGenre[];
     private readonly _ageRating: MovieAgeRating;
-    private readonly _posterUrl: MoviePosterUrl
-    private readonly _price: Money
+    private readonly _posterUrl: MoviePosterUrl;
+    private readonly _price: Money;
 
     private constructor(
         id: MovieId,
@@ -30,8 +28,7 @@ export class MovieInfo extends ValueObject {
         genres: MovieGenre[],
         ageRating: MovieAgeRating,
         posterUrl: MoviePosterUrl,
-    
-    ){
+    ) {
         super();
         this._id = id;
         this._title = title;
@@ -39,7 +36,7 @@ export class MovieInfo extends ValueObject {
         this._genres = genres;
         this._ageRating = ageRating;
         this._posterUrl = posterUrl;
-        this._price = Money.create(MovieInfo.calculatePrice(duration.value), "EUR");
+        this._price = Money.create(MovieInfo.calculatePrice(duration.value), 'EUR');
     }
 
     public static create(
@@ -50,31 +47,30 @@ export class MovieInfo extends ValueObject {
         ageRating: MovieAgeRating,
         posterUrl: MoviePosterUrl,
     ): MovieInfo {
-        const newMovie =  new MovieInfo(
+        const newMovie = new MovieInfo(
             id,
-            title, 
-            duration, 
-            genres, 
-            ageRating, 
-            posterUrl, 
-            );
+            title,
+            duration,
+            genres,
+            ageRating,
+            posterUrl,
+        );
         newMovie.validate();
         return newMovie;
     }
 
-    protected validate(){
-        if(this.genres.length === 0){
+    protected validate() {
+        if (this.genres.length === 0) {
             throw new InvalidGenresException();
         }
     }
 
     override equals(other: MovieInfo): boolean {
-        return this.Id.equals(other.Id)
+        return this.Id.equals(other.Id);
     }
 
     private static calculatePrice(movieDuration: number): number {
         return movieDuration * MovieInfo.PRICE_PER_MIN;
-
     }
 
     public get Id(): MovieId {

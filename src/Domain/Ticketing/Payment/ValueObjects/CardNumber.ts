@@ -21,8 +21,8 @@ export class CardNumber extends ValueObject {
     }
 
     public equals(other: CardNumber): boolean {
-        return other instanceof CardNumber
-                && this._value === other._value;
+        return other instanceof CardNumber &&
+            this._value === other._value;
     }
 
     public get cardNumber(): string {

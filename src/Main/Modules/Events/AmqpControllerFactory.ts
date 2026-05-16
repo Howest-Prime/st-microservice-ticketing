@@ -6,12 +6,12 @@ import {
 } from '@/Application/Ticketing/Suggestions/mod.ts';
 import type { UseCase } from '@/Application/Ports/mod.ts';
 import {
-    CreateSuggestionController,
-    SaveMovieController,
-    SaveMovieRequest,
-    CreateSuggestionRequest,
     CreateOrderFromBookingController,
     CreateOrderFromBookingRequest,
+    CreateSuggestionController,
+    CreateSuggestionRequest,
+    SaveMovieController,
+    SaveMovieRequest,
 } from '@/Infrastructure/Messaging/LavinMQ/Controllers/mod.ts';
 
 import {
@@ -21,7 +21,10 @@ import {
 import type { ConsumerContext } from '@/Infrastructure/Messaging/LavinMQ/Shared/Amqp/AmqpBrokerConfigurator.ts';
 import { IllegalStateException } from '@domaincrafters/std';
 import { SaveMovieUseCase, SaveMovieUseCaseInput } from '@/Application/Ticketing/Movies/mod.ts';
-import {  CreateOrderFromBookingInput, CreateOrderFromBookingUseCase } from '@/Application/Ticketing/Orders/mod.ts';
+import {
+    CreateOrderFromBookingInput,
+    CreateOrderFromBookingUseCase,
+} from '@/Application/Ticketing/Orders/mod.ts';
 
 export class AmqpControllerFactory implements ControllerFactory {
     private readonly _serviceProvider: ServiceProvider;
@@ -41,9 +44,8 @@ export class AmqpControllerFactory implements ControllerFactory {
                 return this.createCreateSuggestionController();
             case 'whenmovieregisteredsavemovie':
                 return this.createSaveMovieController();
-            case 'createorderwhenbookingopened': 
+            case 'createorderwhenbookingopened':
                 return this.createCreateOrderFromBookingController();
-            
         }
 
         const normalizedEventName = eventName.toLowerCase();
@@ -83,6 +85,8 @@ export class AmqpControllerFactory implements ControllerFactory {
             UseCase<CreateOrderFromBookingInput, string>
         >(CreateOrderFromBookingUseCase.name)).getOrThrow();
 
-        return new CreateOrderFromBookingController(useCase) as AmqpController<CreateOrderFromBookingRequest>;
+        return new CreateOrderFromBookingController(useCase) as AmqpController<
+            CreateOrderFromBookingRequest
+        >;
     }
 }

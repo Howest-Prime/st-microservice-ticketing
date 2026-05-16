@@ -1,4 +1,7 @@
-import { MongoDbClient, MongoDbRepository } from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
+import {
+    MongoDbClient,
+    MongoDbRepository,
+} from '@/Infrastructure/Persistence/MongoDb/Shared/mod.ts';
 import { Movie, MovieRepository } from '@/Domain/Ticketing/Movies/mod.ts';
 import { MovieDocumentMapper } from './Mappers/MovieDocumentMapper.ts';
 import { MovieId } from '@/Domain/Ticketing/Shared/mod.ts';

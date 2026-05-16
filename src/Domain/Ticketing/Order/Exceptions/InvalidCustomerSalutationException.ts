@@ -4,7 +4,9 @@ import { CustomerSalutationLabel } from '@/Domain/Ticketing/Order/ValueObjects/C
 export class InvalidCustomerSalutationException extends DomainException {
     public constructor(value: string) {
         super(
-            `Invalid salutation '${value}'. Valid values: ${Object.values(CustomerSalutationLabel).join(', ')}`,
+            `Invalid salutation '${value}'. Valid values: ${
+                Object.values(CustomerSalutationLabel).join(', ')
+            }`,
         );
     }
 }

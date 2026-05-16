@@ -2,7 +2,6 @@ import { ValueObject } from '@/Domain/Shared/mod.ts';
 
 import { InvalidMoney } from '@/Domain/Ticketing/Shared/mod.ts';
 
-
 export class Money extends ValueObject {
     private readonly _amount: number;
     private readonly _currency: string;
@@ -27,13 +26,12 @@ export class Money extends ValueObject {
             throw new InvalidMoney(this._amount, this._currency);
         }
     }
-      
+
     public override equals(other: ValueObject): boolean {
-        return other instanceof Money 
-                 && this._amount === other._amount
-                    && this.currency === other._currency;
+        return other instanceof Money &&
+            this._amount === other._amount &&
+            this.currency === other._currency;
     }
-    
 
     public get amount(): number {
         return this._amount;

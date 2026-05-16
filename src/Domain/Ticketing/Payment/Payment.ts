@@ -8,6 +8,7 @@ import {
     OrderId,
     PaymentAmount,
     PaymentFailed,
+    PaymentFailedException,
     PaymentId,
     PaymentMethod,
     PaymentStatus,
@@ -91,6 +92,8 @@ export class Payment extends AggregateRoot<PaymentId> {
                     failureReason || 'Unknown reason',
                 ),
             );
+
+            throw new PaymentFailedException(this.id.value, failureReason || 'Unknown reason');
         }
     }
 

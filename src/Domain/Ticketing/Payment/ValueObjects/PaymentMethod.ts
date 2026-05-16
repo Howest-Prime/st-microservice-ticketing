@@ -8,7 +8,7 @@ export enum PaymentMethodType {
 
 export class PaymentMethod extends ValueObject {
     private constructor(
-        public readonly type: PaymentMethodType,
+        public readonly _type: PaymentMethodType,
     ) {
         super();
     }
@@ -29,12 +29,12 @@ export class PaymentMethod extends ValueObject {
     
 
     public get paymentMethodType(): PaymentMethodType {
-        return this.type;
+        return this._type;
     }
 
     public equals(other: PaymentMethod): boolean {
         return other instanceof PaymentMethod
-                && this.type === other.type;
+                && this._type === other._type;
     }
 
     public static readonly CreditCard = PaymentMethod.create(PaymentMethodType.CreditCard);

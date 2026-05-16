@@ -3,8 +3,8 @@ import { ValueObject } from '@/Domain/Shared/mod.ts';
 
 export class ExpiryDate extends ValueObject {
     private constructor(
-        public readonly month: number,
-        public readonly year: number
+        public readonly _month: number,
+        public readonly _year: number
     ) {
         super();
     }
@@ -16,22 +16,22 @@ export class ExpiryDate extends ValueObject {
     }
     
     public validate(): void {
-        if (this.month < 1 || this.month > 12) {
-            throw new InvalidExpiryDateException(this.month, this.year);
+        if (this._month < 1 || this._month > 12) {
+            throw new InvalidExpiryDateException(this._month, this._year);
         }   
     }
 
     public equals(other: ExpiryDate): boolean {
         return other instanceof ExpiryDate
-                && this.month === other.month
-                && this.year === other.year;
+                && this._month === other._month
+                && this._year === other._year;
     }
 
     public get expiryMonth(): number {
-        return this.month;
+        return this._month;
     }
 
     public get expiryYear(): number {
-        return this.year;
+        return this._year;
     }
 }

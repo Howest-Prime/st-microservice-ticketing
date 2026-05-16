@@ -3,7 +3,7 @@ import { ValueObject } from '@/Domain/Shared/mod.ts';
 
 export class CardNumber extends ValueObject {
     private constructor(
-        public readonly value: string,
+        public readonly _value: string,
     ) {
         super();
     }
@@ -15,17 +15,17 @@ export class CardNumber extends ValueObject {
     }
 
     public validate(): void {
-        if (!this.value || this.value.length < 13) {
-            throw new InvalidCardNumberException(this.value);
+        if (!this._value || this._value.length < 12 || this._value.length > 19) {
+            throw new InvalidCardNumberException(this._value);
         }
     }
 
     public equals(other: CardNumber): boolean {
         return other instanceof CardNumber
-                && this.value === other.value;
+                && this._value === other._value;
     }
 
     public get cardNumber(): string {
-        return this.value;
+        return this._value;
     }
 }

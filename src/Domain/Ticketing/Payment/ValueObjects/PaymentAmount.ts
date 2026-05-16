@@ -3,25 +3,29 @@ import { InvalidPaymentAmountException } from '@/Domain/Ticketing/Payment/mod.ts
 
 export class PaymentAmount extends ValueObject {
     private constructor(
-        public readonly value: number
+        public readonly _value: number
     ) {
         super();
     }
 
     public static create(value: number): PaymentAmount {
-        if (value <= 0) {
-            throw new InvalidPaymentAmountException(value);
-        }
-        return new PaymentAmount(value);
+       const newPaymentAmount = new PaymentAmount(value);
+        newPaymentAmount.validate();
+        return newPaymentAmount;
     }
 
+    private validate(): void {
+        if (!Number.isFinite(this._value) || this._value <= 0) {
+        throw new InvalidPaymentAmountException(this._value);
+        }
+    }
     public equals(other: PaymentAmount): boolean {
         return other instanceof PaymentAmount
-                && this.value === other.value;
+                && this._value === other._value ;
     }
 
     public get amount(): number {
-        return this.value;
+        return this._value;
     }
 }
 

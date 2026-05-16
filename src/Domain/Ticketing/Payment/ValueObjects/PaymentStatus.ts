@@ -1,4 +1,4 @@
-import { InvalidPaymentStatusException } from '@/Domain/Ticketing/Payment/mod.ts';
+import { InvalidPaymentStatusException, InvalidPaymentTransitionException } from '@/Domain/Ticketing/Payment/mod.ts';
 import { ValueObject } from '@/Domain/Shared/mod.ts';
 
 export enum PaymentStatusState {
@@ -9,7 +9,7 @@ export enum PaymentStatusState {
 
 export class PaymentStatus extends ValueObject {
     private constructor(
-        public readonly value: PaymentStatusState
+        public readonly _value: PaymentStatusState
     ) {
         super();
     }
@@ -31,15 +31,36 @@ export class PaymentStatus extends ValueObject {
     }
 
     public validate(): void {
-        if (!Object.values(PaymentStatusState).includes(this.value)) {
-            throw new InvalidPaymentStatusException(this.value);
+        if (!Object.values(PaymentStatusState).includes(this._value)) {
+            throw new InvalidPaymentStatusException(this._value);
         }      
         
     }
 
     public equals(other: PaymentStatus): boolean {
         return other instanceof PaymentStatus
-                && this.value === other.value;  
+                && this._value === other._value;  
     }
+
+    public transitionTo(target: PaymentStatus): PaymentStatus {
+        if (!this.canTransitionTo(target)) {
+            throw new InvalidPaymentTransitionException(this._value, target._value);
+        }
+        return target;
+    }
+
+    private  canTransitionTo(target: PaymentStatus): boolean {
+        const validTransitions: Record<PaymentStatusState, PaymentStatusState[]> = {
+            [PaymentStatusState.Pending]: [PaymentStatusState.Success, PaymentStatusState.Failed],
+            [PaymentStatusState.Success]: [],
+            [PaymentStatusState.Failed]: [],
+        };
+
+        return validTransitions[this._value].includes(target._value);
+    }
+
+    public static readonly Pending = PaymentStatus.create(PaymentStatusState.Pending);
+    public static readonly Success = PaymentStatus.create(PaymentStatusState.Success)
+    public static readonly Failed = PaymentStatus.create(PaymentStatusState.Failed);
 
 }

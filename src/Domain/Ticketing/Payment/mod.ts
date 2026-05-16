@@ -7,6 +7,7 @@ export {
     InvalidPaymentStatusException,
 } from './Exceptions/InvalidPaymentException.ts';
 export { InvalidPaymentTransitionException } from './Exceptions/InvalidPaymentTransitionException.ts';
+export { AlreadyInStatusException } from './Exceptions/AlreadyInStatusException.ts';
 
 export { PaymentMethod } from './/ValueObjects/PaymentMethod.ts';
 export { CardNumber } from './/ValueObjects/CardNumber.ts';

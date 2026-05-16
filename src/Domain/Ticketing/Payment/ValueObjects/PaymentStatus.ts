@@ -1,4 +1,5 @@
 import {
+    AlreadyInStatusException,
     InvalidPaymentStatusException,
     InvalidPaymentTransitionException,
 } from '@/Domain/Ticketing/Payment/mod.ts';
@@ -47,6 +48,8 @@ export class PaymentStatus extends ValueObject {
     public transitionTo(target: PaymentStatus): PaymentStatus {
         if (!this.canTransitionTo(target)) {
             throw new InvalidPaymentTransitionException(this._value, target._value);
+        }else if (this.equals(target)) {
+            throw new AlreadyInStatusException(this._value);
         }
         return target;
     }

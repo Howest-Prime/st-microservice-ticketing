@@ -14,7 +14,7 @@ export { PaymentAmount } from './/ValueObjects/PaymentAmount.ts';
 export { PaymentStatus } from './/ValueObjects/PaymentStatus.ts';
 
 export { PaymentDomainEvent } from './Events/PaymentDomainEvent.ts';
-export { PaymentSucceeeded } from './Events/PaymentSuccess.ts';
+export { PaymentSucceeeded } from '@/Domain/Ticketing/Payment/Events/PaymentSucceeded.ts';
 export { PaymentFailed } from './Events/PaymentFailed.ts';
 
 

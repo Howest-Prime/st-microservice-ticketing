@@ -11,6 +11,8 @@ import {
     PaymentAmount,
     PaymentMethod,
 } from '@/Domain/Ticketing/Payment/mod.ts';
+import { OrderRepository } from '@/Domain/Ticketing/Order/mod.ts';
+import { OrderNotFoundException } from '@/Application/Ticketing/Orders/mod.ts';
 
 export interface PayOrderInput {
     externalId: string;
@@ -38,6 +40,12 @@ export class PayOrderUseCase implements UseCase<PayOrderInput, PayOrderOutput> {
         this._logger.debug('Processing payment', { orderId: input.orderId, amount: input.amount });
 
         const results = await this._uow.do<PayOrderOutput>(async () => {
+            
+            const orderId = OrderId.create(input.orderId);
+            (await this._uow.getRepository<OrderRepository>('Order')
+                            .byId(orderId))
+                            .orElseThrow(() => new OrderNotFoundException(orderId.value));
+            
             const payment = this.createPayment(input);
 
             const paymentRequest = this.createPaymentRequest(payment);

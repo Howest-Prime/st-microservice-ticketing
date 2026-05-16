@@ -12,6 +12,7 @@ import {
     OrderMustHaveAtLeastOneTicketException,
     OrderPaid,
     OrderStatus,
+    TicketsReleased,
     TermsNotAcceptedException,
     Ticket,
     VisitorTypeLabel,
@@ -57,12 +58,34 @@ export class Order extends AggregateRoot<OrderId> {
         if (!this.isStatusOpen()) throw new CannotPayOrderException();
         if (!this.isTermsAccepted()) throw new TermsNotAcceptedException();
         this._status = this._status.transitionTo(OrderStatus.Paid);
+
         this.raise(OrderPaid.create(this.id.value, this._bookingId.value));
     }
 
     public releaseTickets(): void {
         if (!this.isStatusPaid()) throw new CannotReleaseTicketsException();
         this._status = this.status.transitionTo(OrderStatus.TicketReleased);
+        
+        this.raise(TicketsReleased.create(
+            this.id.value,
+            this._customer
+                ? {
+                    salutation: this._customer.salutation.value,
+                    firstName: this._customer.firstName.name,
+                    lastName: this._customer.lastName.name,
+                    email: this._customer.email.value,
+                }
+                : null,
+            this._tickets.map((t) => ({
+                ticketId: t.id.value,
+                movieId: t.movieInfo.Id.value,
+                room: t.room,
+                seatNumber: t.seat.seatNumber,
+                visitorType: t.seat.seatVisitorType,
+                price: t.price.amount,
+                showtime: t.showtime.toISOString(),
+            })),
+        ));
     }
 
     public cancel(): void {

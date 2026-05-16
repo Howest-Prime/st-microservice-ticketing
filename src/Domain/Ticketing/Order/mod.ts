@@ -29,3 +29,5 @@ export type { OrderRepository } from './OrderRepository.ts';
 
 export { OrderDomainEvent } from './Events/OrderDomainEvent.ts';
 export { OrderPaid } from './Events/OrderPaid.ts';
+export { TicketsReleased } from './Events/TicketsReleased.ts';
+export type { ReleasedTicket, ReleasedCustomer } from './Events/TicketsReleased.ts';

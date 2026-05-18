@@ -24,4 +24,10 @@ export {
     ReleaseTicketUseCase,
 } from './ReleaseTicketUseCase.ts';
 
+export {
+    type CancelOrderInput,
+    CancelOrderUseCase
+} from './CancelOrderUseCase.ts';
+
 export { WhenOrderPaidThenReleaseTickets } from './WhenOrderPaidThenReleaseTickets.ts';
+export { WhenPaymentFailedThenCancelOrder } from './WhenPaymentFailedThenCancelOrder.ts';

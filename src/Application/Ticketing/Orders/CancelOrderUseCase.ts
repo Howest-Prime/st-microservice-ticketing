@@ -1,7 +1,6 @@
 import { Logger, UnitOfWork, UseCase } from '@/Application/Ports/mod.ts';
-import { OrderRepository } from '@/Domain/Ticketing/Order/mod.ts';
+import { OrderId, OrderRepository } from '@/Domain/Ticketing/Order/mod.ts';
 import { OrderNotFoundException } from '@/Application/Ticketing/Orders/mod.ts';
-import { OrderId } from '@/Domain/Ticketing/Payment/mod.ts';
 
 
 export interface CancelOrderInput {

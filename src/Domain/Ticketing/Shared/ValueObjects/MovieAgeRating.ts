@@ -23,10 +23,7 @@ export class MovieAgeRating extends ValueObject {
     }
 
     public override equals(other: MovieAgeRating): boolean {
-        if (!other) {
-            return false;
-        }
-        return this._value === other._value;
+        return other instanceof MovieAgeRating && this._value === other._value;
     }
 
     public get Value(): number {

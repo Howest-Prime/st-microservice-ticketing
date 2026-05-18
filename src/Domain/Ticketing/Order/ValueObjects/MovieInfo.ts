@@ -66,7 +66,14 @@ export class MovieInfo extends ValueObject {
     }
 
     override equals(other: MovieInfo): boolean {
-        return this.Id.equals(other.Id);
+        return other instanceof MovieInfo
+            && this._id.equals(other._id)
+            && this._title.equals(other._title)
+            && this._duration.equals(other._duration)
+            && this._ageRating.equals(other._ageRating)
+            && this._posterUrl.equals(other._posterUrl)
+            && this._genres.length === other._genres.length
+            && this._genres.every((g, i) => g.equals(other._genres[i]!));
     }
 
     private static calculatePrice(movieDuration: number): number {

@@ -11,7 +11,7 @@ export class InvalidEmailException extends DomainException {
 export class Email extends ValueObject {
     private readonly _value: string;
 
-    private constructor(value: string) {
+    protected constructor(value: string) {
         super();
         this._value = value;
     }

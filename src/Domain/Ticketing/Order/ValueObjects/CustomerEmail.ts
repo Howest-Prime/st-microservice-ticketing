@@ -1,25 +1,18 @@
 import { Email } from '@/Domain/Shared/mod.ts';
 
-export class CustomerEmail {
-    private readonly _email: Email;
-
+export class CustomerEmail extends Email {
     private constructor(value: string) {
-        this._email = Email.create(value);
+        super(value);
     }
 
-    public static create(value: string): CustomerEmail {
-        return new CustomerEmail(value);
+    public static override create(value: string): CustomerEmail {
+        const normalized = value.trim().toLowerCase();
+        const instance = new CustomerEmail(normalized);
+        instance.validate();
+        return instance;
     }
 
-    get value(): string {
-        return this._email.value;
-    }
-
-    equals(other: CustomerEmail): boolean {
-        return this._email.equals(other._email);
-    }
-
-    toString(): string {
-        return this._email.toString();
+    public override equals(other: CustomerEmail): boolean {
+        return other instanceof CustomerEmail && this.value === other.value;
     }
 }

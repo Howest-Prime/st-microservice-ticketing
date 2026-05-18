@@ -36,7 +36,7 @@ export class Customer extends ValueObject {
 
     public override equals(other: Customer): boolean {
         return other instanceof Customer &&
-            this._salutation === other._salutation &&
+            this._salutation.equals(other._salutation) &&
             this._firstName.equals(other._firstName) &&
             this._lastName.equals(other._lastName) &&
             this._email.equals(other._email);

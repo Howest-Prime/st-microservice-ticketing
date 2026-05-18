@@ -10,12 +10,12 @@ export { InvalidPaymentTransitionException } from './Exceptions/InvalidPaymentTr
 export { AlreadyInStatusException } from './Exceptions/AlreadyInStatusException.ts';
 export { PaymentFailedException } from './Exceptions/PaymentFailedException.ts';
 
-export { PaymentMethod } from './/ValueObjects/PaymentMethod.ts';
-export { CardNumber } from './/ValueObjects/CardNumber.ts';
-export { ExpiryDate } from './/ValueObjects/ExpiryDate.ts';
-export { CVV } from './/ValueObjects/CVV.ts';
-export { PaymentAmount } from './/ValueObjects/PaymentAmount.ts';
-export { PaymentStatus } from './/ValueObjects/PaymentStatus.ts';
+export { PaymentMethod } from './ValueObjects/PaymentMethod.ts';
+export { CardNumber } from './ValueObjects/CardNumber.ts';
+export { ExpiryDate } from './ValueObjects/ExpiryDate.ts';
+export { CVV } from './ValueObjects/CVV.ts';
+export { PaymentAmount } from './ValueObjects/PaymentAmount.ts';
+export { PaymentStatus } from './ValueObjects/PaymentStatus.ts';
 
 export { PaymentDomainEvent } from './Events/PaymentDomainEvent.ts';
 export { PaymentSucceeeded } from '@/Domain/Ticketing/Payment/Events/PaymentSucceeded.ts';

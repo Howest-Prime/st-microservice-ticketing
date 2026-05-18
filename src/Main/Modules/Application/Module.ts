@@ -21,6 +21,8 @@ import { SaveMovieUseCase, SaveMovieUseCaseInput } from '@/Application/Ticketing
 import {
     AddCustomerToOrderUseCase,
     AddCustomerToOrderUseCaseInput,
+    CancelOrderInput,
+    CancelOrderUseCase,
     CreateOrderFromBookingInput,
     CreateOrderFromBookingUseCase,
     GetOrderByBookingIdInput,
@@ -30,6 +32,7 @@ import {
     ReleaseTicketInput,
     ReleaseTicketUseCase,
     WhenOrderPaidThenReleaseTickets,
+    WhenPaymentFailedThenCancelOrder,
 } from '@/Application/Ticketing/Orders/mod.ts';
 import { MongoDbGetOrderByBookingIdQuery } from '@/Infrastructure/Persistence/MongoDb/Queries/Orders/mod.ts';
 import {
@@ -214,6 +217,26 @@ export class Application implements Module {
                 return useCase;
             }
         );
+
+        serviceCollection.addScoped(
+            CancelOrderUseCase.name,
+            async (serviceProvider: ServiceProvider) => {
+                const unitOfWork = (await serviceProvider.getService<MongoDbUnitOfWork>(
+                    MongoDbUnitOfWork.name,
+                )).getOrThrow();
+
+                const logger = (await serviceProvider.getService<Logger>(ConsoleLogger.name))
+                    .getOrThrow();
+
+                const useCase: UseCase<CancelOrderInput, void> = new CancelOrderUseCase(
+                    unitOfWork,
+                    logger,
+                );
+
+                return useCase;
+
+            }
+        )
     }
 
     private addPolicies(serviceCollection: ServiceCollection): void {
@@ -255,6 +278,21 @@ export class Application implements Module {
                 )).getOrThrow();
 
                 return new WhenOrderPaidThenReleaseTickets(releaseTicketUseCase, logger);
+            },
+        );
+
+        serviceCollection.addScoped(
+            WhenPaymentFailedThenCancelOrder.name,
+            async (serviceProvider: ServiceProvider) => {
+                const cancelOrderUseCase = (await serviceProvider.getService<
+                    UseCase<CancelOrderInput, void>
+                >(ReleaseTicketUseCase.name)).getOrThrow();
+
+                const logger = (await serviceProvider.getService<Logger>(
+                    ConsoleLogger.name,
+                )).getOrThrow();
+
+                return new WhenPaymentFailedThenCancelOrder(cancelOrderUseCase, logger);
             },
         );
     }

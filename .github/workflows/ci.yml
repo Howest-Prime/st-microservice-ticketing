@@ -76,4 +76,4 @@ jobs:
             exit 1
           fi
 
-          echo "Code coverage meets threshold of 50%"
+          echo "Code coverage meets threshold of 97%"

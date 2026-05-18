@@ -32,9 +32,9 @@ export class OrderStatus extends ValueObject {
 
     private canTransitionTo(newStatus: OrderStatus): boolean {
         const validTransitions: Record<OrderStatusState, OrderStatusState[]> = {
-            [OrderStatusState.Open]: [OrderStatusState.Paid],
+            [OrderStatusState.Open]: [OrderStatusState.Paid, OrderStatusState.Cancelled],
             [OrderStatusState.Paid]: [OrderStatusState.TicketReleased],
-            [OrderStatusState.TicketReleased]: [OrderStatusState.Cancelled],
+            [OrderStatusState.TicketReleased]: [],
             [OrderStatusState.Cancelled]: [],
         };
 

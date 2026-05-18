@@ -286,7 +286,7 @@ export class Application implements Module {
             async (serviceProvider: ServiceProvider) => {
                 const cancelOrderUseCase = (await serviceProvider.getService<
                     UseCase<CancelOrderInput, void>
-                >(ReleaseTicketUseCase.name)).getOrThrow();
+                >(CancelOrderUseCase.name)).getOrThrow();
 
                 const logger = (await serviceProvider.getService<Logger>(
                     ConsoleLogger.name,

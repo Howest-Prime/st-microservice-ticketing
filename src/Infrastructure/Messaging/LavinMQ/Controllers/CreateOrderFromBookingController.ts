@@ -1,10 +1,12 @@
 import { AmqpController } from '@/Infrastructure/Messaging/LavinMQ/Shared/mod.ts';
 import { UseCase } from '@/Application/Ports/mod.ts';
 import { CreateOrderFromBookingInput } from '@/Application/Ticketing/Orders/mod.ts';
+import { UUID } from '@domaincrafters/std';
+
 
 export interface CreateOrderFromBookingRequest {
-    bookingId: string;
-    movieId: string;
+    bookingId: UUID;
+    movieId: UUID;
     room: string;
     showtime: string;
     numberOfStandardVisitors: number;
@@ -20,8 +22,8 @@ export class CreateOrderFromBookingController
 
     async handle(request: CreateOrderFromBookingRequest): Promise<void> {
         const input: CreateOrderFromBookingInput = {
-            bookingId: request.bookingId,
-            movieId: request.movieId,
+            bookingId: request.bookingId.toString(),
+            movieId: request.movieId.toString(),
             room: request.room,
             showtime: new Date(request.showtime),
             amountOfStandardVisitors: request.numberOfStandardVisitors,

@@ -22,6 +22,7 @@ export class Payment extends AggregateRoot<PaymentId> {
     private readonly _cvv: CVV;
     private readonly _orderId: OrderId;
     private readonly _bookingId: BookingId;
+    private readonly _externalBookingId: string;
     private readonly _amount: PaymentAmount;
     private _status: PaymentStatus = PaymentStatus.Pending;
 
@@ -34,6 +35,7 @@ export class Payment extends AggregateRoot<PaymentId> {
         cvv: CVV,
         orderId: OrderId,
         bookingId: BookingId,
+        externalBookingId: string,
         amount: PaymentAmount,
     ) {
         super(id);
@@ -44,6 +46,7 @@ export class Payment extends AggregateRoot<PaymentId> {
         this._cvv = cvv;
         this._orderId = orderId;
         this._bookingId = bookingId;
+        this._externalBookingId = externalBookingId;
         this._amount = amount;
     }
 
@@ -55,6 +58,7 @@ export class Payment extends AggregateRoot<PaymentId> {
         cvv: CVV,
         orderId: OrderId,
         bookingId: BookingId,
+        externalBookingId: string,
         amount: PaymentAmount,
     ): Payment {
         const id = PaymentId.create();
@@ -67,6 +71,7 @@ export class Payment extends AggregateRoot<PaymentId> {
             cvv,
             orderId,
             bookingId,
+            externalBookingId,
             amount,
         );
     }
@@ -78,7 +83,7 @@ export class Payment extends AggregateRoot<PaymentId> {
                 PaymentSucceeeded.create(
                     this.id.value,
                     this.orderId.value,
-                    this.bookingId.value,
+                    this.externalBookingId,
                 ),
             );
         } else {
@@ -87,7 +92,7 @@ export class Payment extends AggregateRoot<PaymentId> {
                 PaymentFailed.create(
                     this.id.value,
                     this.orderId.value,
-                    this.bookingId.value,
+                    this.externalBookingId,
                     failureReason || 'Unknown reason',
                 ),
             );
@@ -138,5 +143,9 @@ export class Payment extends AggregateRoot<PaymentId> {
 
     public get status(): PaymentStatus {
         return this._status;
+    }
+
+    public get externalBookingId(): string {
+        return this._externalBookingId;
     }
 }

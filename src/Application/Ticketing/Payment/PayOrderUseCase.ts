@@ -48,7 +48,7 @@ export class PayOrderUseCase implements UseCase<PayOrderInput, PayOrderOutput> {
             
             order.ensureIsOpenForPayment();
             
-            const payment = this.createPayment(input);
+            const payment = this.createPayment(input, order.externalBookingId);
 
             const paymentRequest = this.createPaymentRequest(payment);
 
@@ -58,7 +58,7 @@ export class PayOrderUseCase implements UseCase<PayOrderInput, PayOrderOutput> {
             payment.handlePayment(paymentResponse.success, paymentResponse.failureReason);
 
             await this._uow.save(payment);
-            this._logger.info('Payment processed', { orderId: payment.orderId, status: payment.status });
+            this._logger.info('Payment processed', { orderId: payment.orderId.value, status: payment.status.value });
 
             return {
                 paymentId: payment.id.toString(),
@@ -78,7 +78,7 @@ export class PayOrderUseCase implements UseCase<PayOrderInput, PayOrderOutput> {
         };
     }
 
-    private createPayment(input: PayOrderInput): Payment {
+    private createPayment(input: PayOrderInput, externalBookingId: string): Payment {
         return Payment.create(
             ExternalId.create(input.externalId),
             PaymentMethod.fromString(input.paymentMethod),
@@ -87,6 +87,7 @@ export class PayOrderUseCase implements UseCase<PayOrderInput, PayOrderOutput> {
             CVV.create(input.cvv),
             OrderId.create(input.orderId),
             BookingId.create(input.bookingId),
+            externalBookingId,
             PaymentAmount.create(input.amount),
         );
     }

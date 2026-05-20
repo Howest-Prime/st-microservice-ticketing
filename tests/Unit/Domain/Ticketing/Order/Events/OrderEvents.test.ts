@@ -75,7 +75,7 @@ Deno.test('[Unit] - TicketsReleased - FQDN - instance getter - returns static FQ
     const event = TicketsReleased.create('order-id-001', null, []);
 
     // Assert
-    assertEquals(event.FQDN, TicketsReleased.FQDN_VALUE);
+    assertEquals(event.FQDN, TicketsReleased.FQDN);
     assertEquals(typeof event.FQDN.value, 'string');
-    assertEquals(event.FQDN.value.includes('TicketsReleased'), true);
+    assertEquals(event.FQDN.value.includes('ticketsreleased'), true);
 });

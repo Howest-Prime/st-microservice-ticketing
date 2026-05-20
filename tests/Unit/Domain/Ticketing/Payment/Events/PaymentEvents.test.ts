@@ -20,7 +20,7 @@ Deno.test('[Unit] - PaymentFailed - FQDN - instance getter - returns static FQDN
     // Assert
     assertEquals(event.FQDN, PaymentFailed.FQDN);
     assertEquals(typeof event.FQDN.value, 'string');
-    assertEquals(event.FQDN.value.includes('PaymentFailed'), true);
+    assertEquals(event.FQDN.value.includes('paymentfailed'), true);
 });
 
 Deno.test('[Unit] - PaymentSucceeeded - create - returns event with correct properties', () => {

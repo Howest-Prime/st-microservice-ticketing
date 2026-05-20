@@ -1,6 +1,7 @@
 import { assertEquals } from '@std/assert';
 import {
     AlreadyHasTicketsException,
+    CustomerAlreadyAssignedException,
     DuplicateSeatException,
     InvalidTicketCountException,
 } from '@/Domain/Ticketing/Order/mod.ts';
@@ -46,4 +47,21 @@ Deno.test('[Unit] - InvalidTicketCountException - constructor - zero expected - 
 
     // Assert
     assertEquals(exception.message, 'Expected 0 ticket(s) based on visitor count, but got 1.');
+});
+
+Deno.test('[Unit] - CustomerAlreadyAssignedException - constructor - creates exception with correct message', () => {
+    // Act
+    const exception = new CustomerAlreadyAssignedException('order-001');
+
+    // Assert
+    assertEquals(exception.message, 'Customer already assigned to order order-001');
+    assertEquals(exception instanceof Error, true);
+});
+
+Deno.test('[Unit] - CustomerAlreadyAssignedException - constructor - different order id - reflects in message', () => {
+    // Act
+    const exception = new CustomerAlreadyAssignedException('550e8400-e29b-41d4-a716-446655440000');
+
+    // Assert
+    assertEquals(exception.message, 'Customer already assigned to order 550e8400-e29b-41d4-a716-446655440000');
 });

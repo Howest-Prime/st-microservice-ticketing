@@ -24,6 +24,7 @@ const makePayment = () =>
         CVV.create('123'),
         OrderId.create(),
         BookingId.create(),
+        'EXT-BOOKING-123',
         PaymentAmount.create(99.99),
     );
 
@@ -72,7 +73,7 @@ Deno.test('[Unit] - Payment - handlePayment - success true - raises PaymentSucce
     const event = events[0] as PaymentSucceeeded;
     assertEquals(event.paymentId, payment.id.value);
     assertEquals(event.orderId, payment.orderId.value);
-    assertEquals(event.bookingId, payment.bookingId.value);
+    assertEquals(event.bookingId, payment.externalBookingId);
     assertEquals(event.occurredOn instanceof Date, true);
 });
 
@@ -101,7 +102,7 @@ Deno.test('[Unit] - Payment - handlePayment - success false - raises PaymentFail
     const event = events[0] as PaymentFailed;
     assertEquals(event.paymentId, payment.id.value);
     assertEquals(event.orderId, payment.orderId.value);
-    assertEquals(event.bookingId, payment.bookingId.value);
+    assertEquals(event.bookingId, payment.externalBookingId);
     assertEquals(event.reason, 'Card declined');
     assertEquals(event.occurredOn instanceof Date, true);
 });
@@ -146,6 +147,7 @@ Deno.test('[Unit] - Payment - getters - return correct value objects', () => {
     const externalId = ExternalId.create();
     const orderId = OrderId.create();
     const bookingId = BookingId.create();
+    const externalBookingId = 'EXT-BOOKING-456';
     const payment = Payment.create(
         externalId,
         PaymentMethod.BankTransfer,
@@ -154,6 +156,7 @@ Deno.test('[Unit] - Payment - getters - return correct value objects', () => {
         CVV.create('456'),
         orderId,
         bookingId,
+        externalBookingId,
         PaymentAmount.create(150.00),
     );
 

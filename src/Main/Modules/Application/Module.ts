@@ -31,14 +31,14 @@ import {
     MarkOrderAsPaidUseCase,
     ReleaseTicketInput,
     ReleaseTicketUseCase,
-    WhenOrderPaidThenReleaseTickets,
-    WhenPaymentFailedThenCancelOrder,
+    WhenOrderPaidThenReleaseTickets
 } from '@/Application/Ticketing/Orders/mod.ts';
 import { MongoDbGetOrderByBookingIdQuery } from '@/Infrastructure/Persistence/MongoDb/Queries/Orders/mod.ts';
 import {
     PayOrderInput,
     PayOrderOutput,
     PayOrderUseCase,
+    WhenPaymentFailedThenCancelOrder,
     WhenPaymentSucceededThenMarkOrderAsPaid,
 } from '@/Application/Ticketing/Payment/mod.ts';
 

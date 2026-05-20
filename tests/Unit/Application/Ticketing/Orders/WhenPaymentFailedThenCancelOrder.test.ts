@@ -1,7 +1,7 @@
 import { assertEquals, assertRejects } from '@std/assert';
 import type { Logger } from '@/Application/Ports/mod.ts';
 import type { CancelOrderInput } from '@/Application/Ticketing/Orders/mod.ts';
-import { WhenPaymentFailedThenCancelOrder } from '@/Application/Ticketing/Orders/mod.ts';
+import { WhenPaymentFailedThenCancelOrder } from '@/Application/Ticketing/Payment/mod.ts';
 import { PaymentFailed } from '@/Domain/Ticketing/Payment/mod.ts';
 
 const mockLogger: Logger = {

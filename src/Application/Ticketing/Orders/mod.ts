@@ -30,4 +30,3 @@ export {
 } from './CancelOrderUseCase.ts';
 
 export { WhenOrderPaidThenReleaseTickets } from './WhenOrderPaidThenReleaseTickets.ts';
-export { WhenPaymentFailedThenCancelOrder } from './WhenPaymentFailedThenCancelOrder.ts';

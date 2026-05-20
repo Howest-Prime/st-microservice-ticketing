@@ -17,6 +17,7 @@ import {
     Ticket,
     VisitorTypeLabel,
     OrderNotOpenForPaymentException,
+    CustomerAlreadyAssignedException,
 } from '@/Domain/Ticketing/Order/mod.ts';
 import { Money } from '@/Domain/Ticketing/Shared/mod.ts';
 
@@ -112,6 +113,7 @@ export class Order extends AggregateRoot<OrderId> {
     public addCustomerInfomations(customer: Customer): void {
         if (!this.isStatusOpen()) throw new CannotAddCustomerInfoException();
         if (!this.isTermsAccepted()) throw new TermsNotAcceptedException();
+        if (this.isCustomerAssigned()) throw new CustomerAlreadyAssignedException(this.id.value);
         this._customer = customer;
     }
 

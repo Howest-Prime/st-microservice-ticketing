@@ -3,7 +3,7 @@ import { EventFQDN } from '../../../Shared/mod.ts';
 
 export class PaymentFailed extends PaymentDomainEvent {
     public static readonly FQDN: EventFQDN = EventFQDN.create(
-        `${PaymentDomainEvent.FQDN_PREFIX}.PaymentFailed`
+        `${PaymentDomainEvent.FQDN_PREFIX}.paymentfailed`
     );
 
     private readonly _occurredOn: Date;

@@ -52,6 +52,48 @@ channels:
                     type: topic
                     routingKey: howestprime.movies.movieevent.bookingopened
 
+    howestprime.ticketing.order.ticketsreleased:
+        address: howestprime.ticketing.order.ticketsreleased
+        title: Tickets released
+        messages:
+            TicketsReleased:
+                $ref: '#/components/messages/TicketsReleased'
+        bindings:
+            amqp:
+                is: routingKey
+                exchange:
+                    name: howestprime
+                    type: topic
+                    routingKey: howestprime.ticketing.order.ticketsreleased
+
+    howestprime.ticketing.payment.paymentsuccess:
+        address: howestprime.ticketing.payment.paymentsuccess
+        title: Payment succeeded
+        messages:
+            PaymentSucceeded:
+                $ref: '#/components/messages/PaymentSucceeded'
+        bindings:
+            amqp:
+                is: routingKey
+                exchange:
+                    name: howestprime
+                    type: topic
+                    routingKey: howestprime.ticketing.payment.paymentsuccess
+
+    howestprime.ticketing.payment.paymentfailed:
+        address: howestprime.ticketing.payment.paymentfailed
+        title: Payment failed
+        messages:
+            PaymentFailed:
+                $ref: '#/components/messages/PaymentFailed'
+        bindings:
+            amqp:
+                is: routingKey
+                exchange:
+                    name: howestprime
+                    type: topic
+                    routingKey: howestprime.ticketing.payment.paymentfailed
+
 operations:
     WhenMovieRegisteredSaveMovie:
         action: receive
@@ -73,6 +115,33 @@ operations:
         messages:
             - $ref: '#/channels/howestprime.movies.movieevent.bookingopened/messages/BookingOpened'
 
+    PublishTicketsReleased:
+        action: send
+        channel:
+            $ref: '#/channels/howestprime.ticketing.order.ticketsreleased'
+        description: |
+            Published when all tickets on an order are released.
+        messages:
+            - $ref: '#/channels/howestprime.ticketing.order.ticketsreleased/messages/TicketsReleased'
+
+    PublishPaymentSucceeded:
+        action: send
+        channel:
+            $ref: '#/channels/howestprime.ticketing.payment.paymentsuccess'
+        description: |
+            Published when a payment for an order succeeds.
+        messages:
+            - $ref: '#/channels/howestprime.ticketing.payment.paymentsuccess/messages/PaymentSucceeded'
+
+    PublishPaymentFailed:
+        action: send
+        channel:
+            $ref: '#/channels/howestprime.ticketing.payment.paymentfailed'
+        description: |
+            Published when a payment for an order fails.
+        messages:
+            - $ref: '#/channels/howestprime.ticketing.payment.paymentfailed/messages/PaymentFailed'
+
 components:
     messages:
         MovieRegistered:
@@ -88,6 +157,27 @@ components:
             summary: Event message emitted when a booking is opened.
             payload:
                 $ref: '#/components/schemas/BookingOpenedPayload'
+
+        TicketsReleased:
+            name: TicketsReleased
+            title: Tickets released
+            summary: Event message emitted when all tickets on an order are released.
+            payload:
+                $ref: '#/components/schemas/TicketsReleasedPayload'
+
+        PaymentSucceeded:
+            name: PaymentSucceeded
+            title: Payment succeeded
+            summary: Event message emitted when a payment for an order succeeds.
+            payload:
+                $ref: '#/components/schemas/PaymentSucceededPayload'
+
+        PaymentFailed:
+            name: PaymentFailed
+            title: Payment failed
+            summary: Event message emitted when a payment for an order fails.
+            payload:
+                $ref: '#/components/schemas/PaymentFailedPayload'
 
     schemas:
         MovieRegisteredPayload:
@@ -178,4 +268,125 @@ components:
                         type: string
                     description: List of reserved seat numbers.
                     example: ['A1', 'A2', 'A3', 'A4']
+
+        TicketsReleasedPayload:
+            type: object
+            required:
+                - orderId
+                - tickets
+            properties:
+                orderId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the released order.
+                    example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                customer:
+                    type: object
+                    nullable: true
+                    properties:
+                        salutation:
+                            type: string
+                            nullable: true
+                            example: Mr.
+                        firstName:
+                            type: string
+                            nullable: true
+                            example: John
+                        lastName:
+                            type: string
+                            nullable: true
+                            example: Doe
+                        email:
+                            type: string
+                            format: email
+                            nullable: true
+                            example: john.doe@example.com
+                tickets:
+                    type: array
+                    items:
+                        type: object
+                        required:
+                            - ticketId
+                            - movieId
+                            - room
+                            - seatNumber
+                            - visitorType
+                            - price
+                            - showtime
+                        properties:
+                            ticketId:
+                                type: string
+                                format: uuid
+                                example: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                            movieId:
+                                type: string
+                                format: uuid
+                                example: 8fdd8b8e-8de4-4b9a-8e16-868b72f4f469
+                            room:
+                                type: string
+                                example: Blue Room
+                            seatNumber:
+                                type: number
+                                example: 12
+                            visitorType:
+                                type: string
+                                example: standard
+                            price:
+                                type: number
+                                example: 12.50
+                            showtime:
+                                type: string
+                                format: date-time
+                                example: '2026-06-01T19:30:00Z'
+
+        PaymentSucceededPayload:
+            type: object
+            required:
+                - paymentId
+                - orderId
+                - bookingId
+            properties:
+                paymentId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the payment.
+                    example: c3d4e5f6-a7b8-9012-cdef-123456789012
+                orderId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the associated order.
+                    example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                bookingId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the associated booking.
+                    example: d4e5f6a7-b8c9-0123-defa-234567890123
+
+        PaymentFailedPayload:
+            type: object
+            required:
+                - paymentId
+                - orderId
+                - bookingId
+                - reason
+            properties:
+                paymentId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the payment.
+                    example: c3d4e5f6-a7b8-9012-cdef-123456789012
+                orderId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the associated order.
+                    example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                bookingId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the associated booking.
+                    example: d4e5f6a7-b8c9-0123-defa-234567890123
+                reason:
+                    type: string
+                    description: Reason for payment failure.
+                    example: Insufficient funds
 

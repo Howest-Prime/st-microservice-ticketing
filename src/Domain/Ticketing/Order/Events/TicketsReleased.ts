@@ -19,8 +19,8 @@ export interface ReleasedCustomer {
 }
 
 export class TicketsReleased extends OrderDomainEvent {
-    public static readonly FQDN_VALUE: EventFQDN = EventFQDN.create(
-        `${OrderDomainEvent.FQDN_PREFIX}.TicketsReleased`,
+    public static readonly FQDN: EventFQDN = EventFQDN.create(
+        `${OrderDomainEvent.FQDN_PREFIX}.ticketsreleased`,
     );
 
     private readonly _occurredOn: Date;
@@ -43,7 +43,7 @@ export class TicketsReleased extends OrderDomainEvent {
     }
 
     public override get FQDN(): EventFQDN {
-        return TicketsReleased.FQDN_VALUE;
+        return TicketsReleased.FQDN;
     }
 
     public override get occurredOn(): Date {

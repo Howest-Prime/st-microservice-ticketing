@@ -7,11 +7,11 @@ import { UUID } from '@domaincrafters/std';
 export interface CreateOrderFromBookingRequest {
     bookingId: UUID;
     movieId: UUID;
-    room: string;
-    showtime: string;
-    numberOfStandardVisitors: number;
-    numberOfDiscountedVisitors: number;
-    seats: number[];
+    roomId: UUID;
+    showTime: string;
+    standardVisitors: number;
+    discountVisitors: number;
+    seatNumbers: number[];
 }
 
 export class CreateOrderFromBookingController
@@ -24,11 +24,11 @@ export class CreateOrderFromBookingController
         const input: CreateOrderFromBookingInput = {
             bookingId: request.bookingId.toString(),
             movieId: request.movieId.toString(),
-            room: request.room,
-            showtime: new Date(request.showtime),
-            amountOfStandardVisitors: request.numberOfStandardVisitors,
-            amountOfDiscountedVisitors: request.numberOfDiscountedVisitors,
-            seats: request.seats,
+            room: request.roomId.toString(),
+            showtime: new Date(request.showTime),
+            amountOfStandardVisitors: request.standardVisitors,
+            amountOfDiscountedVisitors: request.discountVisitors,
+            seats: request.seatNumbers,
         };
         await this._useCase.execute(input);
     }

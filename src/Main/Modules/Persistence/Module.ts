@@ -158,6 +158,8 @@ export class Persistence implements Module {
                     (await serviceProvider.getService<MongoDbClient>('MongoDbClient')).getOrThrow();
                 const mapper = new MovieDocumentMapper();
 
+                await mongoClient.createCollection(MongoDbMovieRepository.collectionName);
+
                 return new MongoDbMovieRepository(mongoClient, mapper);
             },
         );
@@ -169,6 +171,8 @@ export class Persistence implements Module {
                     (await serviceProvider.getService<MongoDbClient>('MongoDbClient')).getOrThrow();
                 const mapper = new OrderDocumentMapper();
 
+                await mongoClient.createCollection(MongoDbOrderRepository.collectionName);
+
                 return new MongoDbOrderRepository(mongoClient, mapper);
             },
         );
@@ -179,6 +183,8 @@ export class Persistence implements Module {
                 const mongoClient =
                     (await serviceProvider.getService<MongoDbClient>('MongoDbClient')).getOrThrow();
                 const mapper = new PaymentDocumentMapper();
+
+                await mongoClient.createCollection(MongoDbPaymentRepository.collectionName);
 
                 return new MongoDbPaymentRepository(mongoClient, mapper);
             },

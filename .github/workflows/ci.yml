@@ -105,7 +105,7 @@ jobs:
         id: push
         uses: docker/build-push-action@v4
         with:
-          file: ./Dockerfile
+          file: ./config/ticketing-howestprime-dev/Dockerfile
           push: true
           tags: ${{ vars.AZ_CONTAINER_REGISTRY }}/${{ env.AZ_CONTAINER_NAME }}:${{ env.CONTAINER_VERSION_TAG }}
 

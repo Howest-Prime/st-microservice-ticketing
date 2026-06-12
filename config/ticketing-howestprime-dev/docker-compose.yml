@@ -1,10 +1,10 @@
 services:
-  ticketing-db.howestprime-dev:
+  ticketing-db.howestprime.dev:
     image: mongo:latest
-    container_name: ticketing-db.howestprime-dev
+    container_name: ticketing-db.howestprime.dev
     restart: unless-stopped
     env_file:
-      - ../.env
+      - ./.ticketing-db.howestprime.dev.env
     ports:
       - "40131:5000"
     volumes:
@@ -18,12 +18,10 @@ services:
         do
           sleep 1
         done
-        mongosh --port 5000 --eval '
-          rs.initiate({
-            _id: \"rs0\",
-            members: [{ _id: 0, host: \"ticketing-db.howestprime-dev:5000\" }]
-          })
-        '
+        mongosh --port 5000 --eval 'rs.initiate({
+          _id: \"rs0\",
+          members: [{ _id: 0, host: \"ticketing-db.howestprime.dev:5000\" }]
+        })'
         wait
       "
     healthcheck:
@@ -34,9 +32,9 @@ services:
       start_period: 40s
 
 
-  ticketing-messagebroker.howestprime-dev:
+  ticketing-messagebroker.howestprime.dev:
     image: cloudamqp/lavinmq
-    container_name: ticketing-messagebroker.howestprime-dev
+    container_name: ticketing-messagebroker.howestprime.dev
     restart: unless-stopped
     ports:
       - "40100:5672"
@@ -44,7 +42,7 @@ services:
     networks:
       - ticketing-howestprime-dev
     healthcheck:
-      test: ["CMD-SHELL", "lavinmqctl status | grep -q 'Uptime:' || exit 1"]
+      test: ["CMD-SHELL", "lavinmqctl status | grep -q 'Uptime: ' || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 5

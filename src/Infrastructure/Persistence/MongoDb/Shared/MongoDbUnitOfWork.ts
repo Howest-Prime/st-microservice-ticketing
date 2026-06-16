@@ -1,20 +1,8 @@
-import type { ClientSession, TransactionOptions } from '@mongodb';
+import type { ClientSession } from '@mongodb';
 import type { UnitOfWork } from '@/Application/Ports/mod.ts';
 import type { AggregateRoot, EntityId, Repository } from '@/Domain/Shared/mod.ts';
 import type { UnitOfWorkInterceptor } from '@/Infrastructure/Persistence/Shared/mod.ts';
 import { IllegalStateException } from '@domaincrafters/std';
-
-/**
- * Default MongoDB transaction options optimized for consistency
- * - snapshot isolation ensures consistent reads
- * - majority write concern ensures durability
- * - maxCommitTimeMS prevents long-running transactions from locking resources
- */
-export const DEFAULT_TRANSACTION_OPTIONS: TransactionOptions = {
-    readConcern: { level: 'snapshot' },
-    writeConcern: { w: 'majority' },
-    maxCommitTimeMS: 10000, // 10 second timeout
-};
 
 /**
  * Retry configuration for handling transient MongoDB errors
@@ -49,7 +37,6 @@ export enum MongoErrorCode {
  */
 export class MongoDbUnitOfWork implements UnitOfWork {
     private readonly _session: ClientSession;
-    private readonly _transactionOptions: TransactionOptions;
     private readonly _repositories: Map<string, Repository<AggregateRoot<EntityId>, EntityId>> =
         new Map();
     private readonly _retryConfig: RetryConfig;
@@ -58,11 +45,9 @@ export class MongoDbUnitOfWork implements UnitOfWork {
 
     constructor(
         session: ClientSession,
-        transactionOptions: TransactionOptions = DEFAULT_TRANSACTION_OPTIONS,
         retryConfig: RetryConfig = DEFAULT_RETRY_CONFIG,
     ) {
         this._session = session;
-        this._transactionOptions = transactionOptions;
         this._retryConfig = retryConfig;
     }
 

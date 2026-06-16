@@ -129,7 +129,7 @@ export class MongoDbUnitOfWork implements UnitOfWork {
      * 4. Proper error propagation (don't swallow domain exceptions)
      * 5. Post-transaction interceptors only run on successful commit
      */
-    async do<Output>(action: () => Promise<Output>): Promise<Output> {
+     async do<Output>(action: () => Promise<Output>): Promise<Output> {
         let attempts = 0;
 
         while (true) {
@@ -137,13 +137,13 @@ export class MongoDbUnitOfWork implements UnitOfWork {
 
             try {
                 // Start transaction
-                this._session.startTransaction(this._transactionOptions);
+             //   this._session.startTransaction(this._transactionOptions);
 
                 // Execute the business logic
                 const result = await action();
 
                 // Commit transaction - this may fail with WriteConflict
-               // await this._session.commitTransaction();
+              //  await this._session.commitTransaction();
 
                 // Only execute post-transaction hooks after successful commit
                 // Interceptors may need access to tracked entities (e.g., for domain events)
